@@ -13,10 +13,26 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  const [supabaseConfigured, setSupabaseConfigured] = useState(false)
+  const [supabaseConfigured, setSupabaseConfigured] = useState(true) // Start as true to avoid flash
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    setSupabaseConfigured(isSupabaseConfigured() || false)
+    setMounted(true)
+    
+    // Force a client-side check after component mounts
+    const checkConfig = () => {
+      const configured = isSupabaseConfigured()
+      console.log('Signup page - Supabase configured:', configured)
+      setSupabaseConfigured(configured)
+    }
+    
+    // Check immediately
+    checkConfig()
+    
+    // Also check after a short delay to ensure env vars are loaded
+    const timeout = setTimeout(checkConfig, 100)
+    
+    return () => clearTimeout(timeout)
   }, [])
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -135,11 +151,17 @@ export default function SignupPage() {
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <form className="space-y-6" onSubmit={handleSignup}>
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                {error}
+              </div>
+            )}
+            
+            {mounted && !supabaseConfigured && (
+              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
+                Supabase is not configured. Please set up your environment variables.
+              </div>
+            )}
 
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
