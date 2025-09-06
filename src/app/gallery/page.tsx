@@ -10,23 +10,21 @@ interface Prompt {
   id: string
   title: string
   description: string
-  prompt_text: string
-  image_url: string | null
+  hidden_prompt: string
+  result_url: string | null
+  model_used: string | null
   category_id: string
   categories: {
     id: string
     name: string
-    slug: string
   }
-  is_premium: boolean
-  price_cents: number
+  created_by: string
   created_at: string
 }
 
 interface Category {
   id: string
   name: string
-  slug: string
 }
 
 export default function GalleryPage() {
@@ -60,8 +58,7 @@ export default function GalleryPage() {
           *,
           categories (
             id,
-            name,
-            slug
+            name
           )
         `)
         .order('created_at', { ascending: false })
@@ -193,10 +190,10 @@ export default function GalleryPage() {
             {prompts.map((prompt) => (
               <div key={prompt.id} className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
                 {/* Image */}
-                {prompt.image_url && (
+                {prompt.result_url && (
                   <div className="aspect-video bg-gray-200">
                     <img
-                      src={prompt.image_url}
+                      src={prompt.result_url}
                       alt={prompt.title}
                       className="w-full h-full object-cover"
                     />
@@ -208,9 +205,9 @@ export default function GalleryPage() {
                     <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
                       {prompt.title}
                     </h3>
-                    {prompt.is_premium && (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 ml-2">
-                        ${(prompt.price_cents / 100).toFixed(2)}
+                    {prompt.model_used && (
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 ml-2">
+                        {prompt.model_used}
                       </span>
                     )}
                   </div>
@@ -230,12 +227,12 @@ export default function GalleryPage() {
                   
                   <div className="bg-gray-50 rounded p-3 mb-4">
                     <p className="text-sm text-gray-700 font-mono line-clamp-4">
-                      {prompt.prompt_text}
+                      {prompt.hidden_prompt}
                     </p>
                   </div>
                   
                   <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    {prompt.is_premium ? 'Unlock Prompt' : 'Use Prompt'}
+                    Use Prompt
                   </button>
                 </div>
               </div>

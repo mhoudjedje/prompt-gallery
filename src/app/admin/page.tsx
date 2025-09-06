@@ -19,11 +19,10 @@ export default function AdminPage() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    prompt_text: '',
-    image_url: '',
-    category_id: '',
-    is_premium: false,
-    price_cents: 0
+    hidden_prompt: '',
+    result_url: '',
+    model_used: '',
+    category_id: ''
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -84,12 +83,11 @@ export default function AdminPage() {
         .insert([{
           title: formData.title,
           description: formData.description,
-          prompt_text: formData.prompt_text,
-          image_url: formData.image_url || null,
+          hidden_prompt: formData.hidden_prompt,
+          result_url: formData.result_url || null,
+          model_used: formData.model_used || null,
           category_id: formData.category_id,
-          is_premium: formData.is_premium,
-          price_cents: formData.is_premium ? formData.price_cents : 0,
-          user_id: user?.id
+          created_by: user?.id
         }])
 
       if (error) throw error
@@ -98,11 +96,10 @@ export default function AdminPage() {
       setFormData({
         title: '',
         description: '',
-        prompt_text: '',
-        image_url: '',
-        category_id: '',
-        is_premium: false,
-        price_cents: 0
+        hidden_prompt: '',
+        result_url: '',
+        model_used: '',
+        category_id: ''
       })
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create prompt')
@@ -192,30 +189,45 @@ export default function AdminPage() {
             </div>
 
             <div>
-              <label htmlFor="image_url" className="block text-sm font-medium text-gray-700 mb-2">
-                Image URL
+              <label htmlFor="result_url" className="block text-sm font-medium text-gray-700 mb-2">
+                Result Image URL
               </label>
               <input
                 type="url"
-                id="image_url"
-                name="image_url"
-                value={formData.image_url}
+                id="result_url"
+                name="result_url"
+                value={formData.result_url}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://example.com/result-image.jpg"
               />
             </div>
 
             <div>
-              <label htmlFor="prompt_text" className="block text-sm font-medium text-gray-700 mb-2">
-                Prompt Content *
+              <label htmlFor="model_used" className="block text-sm font-medium text-gray-700 mb-2">
+                AI Model Used
+              </label>
+              <input
+                type="text"
+                id="model_used"
+                name="model_used"
+                value={formData.model_used}
+                onChange={handleInputChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                placeholder="e.g., DALL-E 3, GPT-4, Midjourney"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="hidden_prompt" className="block text-sm font-medium text-gray-700 mb-2">
+                Hidden Prompt Content *
               </label>
               <textarea
-                id="prompt_text"
-                name="prompt_text"
+                id="hidden_prompt"
+                name="hidden_prompt"
                 required
                 rows={8}
-                value={formData.prompt_text}
+                value={formData.hidden_prompt}
                 onChange={handleInputChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
                 placeholder="Enter the actual prompt text here..."
@@ -243,43 +255,6 @@ export default function AdminPage() {
               </select>
             </div>
 
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="is_premium"
-                  name="is_premium"
-                  checked={formData.is_premium}
-                  onChange={handleInputChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="is_premium" className="ml-2 block text-sm text-gray-700">
-                  Premium prompt (requires payment to unlock)
-                </label>
-              </div>
-              
-              {formData.is_premium && (
-                <div>
-                  <label htmlFor="price_cents" className="block text-sm font-medium text-gray-700 mb-2">
-                    Price (in cents) *
-                  </label>
-                  <input
-                    type="number"
-                    id="price_cents"
-                    name="price_cents"
-                    min="0"
-                    step="1"
-                    value={formData.price_cents}
-                    onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="299 (for $2.99)"
-                  />
-                  <p className="mt-1 text-sm text-gray-500">
-                    Enter price in cents (e.g., 299 for $2.99)
-                  </p>
-                </div>
-              )}
-            </div>
 
             <div className="flex justify-end space-x-4">
               <Link

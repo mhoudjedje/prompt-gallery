@@ -123,23 +123,94 @@ src/
 - **Loading States**: Smooth loading indicators and error handling
 - **Modern Design**: Clean, professional interface
 
-## Deployment
+## 🚀 Deployment Guide
 
-### Deploy to Vercel
+### Step 1: Deploy to GitHub
 
-1. Push your code to GitHub
-2. Connect your repository to Vercel
-3. Add environment variables in Vercel dashboard:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-4. Deploy!
+1. **Create a new repository on GitHub**:
+   - Go to [github.com](https://github.com) and click "New repository"
+   - Name it `prompt-gallery` (or your preferred name)
+   - Make it public or private (your choice)
+   - Don't initialize with README (we already have one)
+
+2. **Push your code to GitHub**:
+   ```bash
+   # Add your GitHub repository as remote origin
+   git remote add origin https://github.com/YOUR_USERNAME/prompt-gallery.git
+   
+   # Rename branch to main (recommended)
+   git branch -M main
+   
+   # Push to GitHub
+   git push -u origin main
+   ```
+
+### Step 2: Deploy to Vercel
+
+1. **Go to Vercel**:
+   - Visit [vercel.com](https://vercel.com)
+   - Sign up/login with your GitHub account
+
+2. **Import your project**:
+   - Click "New Project"
+   - Import your `prompt-gallery` repository
+   - Vercel will auto-detect it's a Next.js project
+
+3. **Configure environment variables**:
+   - In the "Environment Variables" section, add:
+     - `NEXT_PUBLIC_SUPABASE_URL` = Your Supabase project URL
+     - `NEXT_PUBLIC_SUPABASE_ANON_KEY` = Your Supabase anon key
+
+4. **Deploy**:
+   - Click "Deploy"
+   - Vercel will build and deploy your app
+   - You'll get a live URL like `https://prompt-gallery-abc123.vercel.app`
+
+### Step 3: Set up Supabase
+
+1. **Create Supabase project**:
+   - Go to [supabase.com](https://supabase.com)
+   - Create a new project
+   - Note your project URL and anon key
+
+2. **Run the database seed**:
+   - Go to SQL Editor in your Supabase dashboard
+   - Copy and paste the contents of `database/seed.sql`
+   - Click "Run" to execute
+
+3. **Update Vercel environment variables**:
+   - Go back to Vercel dashboard
+   - Update the environment variables with your actual Supabase credentials
+   - Redeploy if needed
+
+### Step 4: Test your deployment
+
+1. **Visit your live URL**
+2. **Test all features**:
+   - Homepage loads correctly
+   - Gallery shows sample prompts
+   - Login/signup works
+   - Admin panel is protected
+   - Category filtering works
 
 ### Environment Variables
 
-Make sure to set these in your production environment:
+Make sure to set these in your Vercel dashboard:
 
 - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anon key
+
+### Troubleshooting
+
+**If you get 500 errors**:
+- Check that your Supabase environment variables are correct
+- Verify the database seed script ran successfully
+- Check Vercel function logs for specific errors
+
+**If prompts don't show**:
+- Make sure you ran the database seed script
+- Check that categories were created
+- Verify RLS policies are set up correctly
 
 ## Features Roadmap
 
