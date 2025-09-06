@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function Header() {
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
