@@ -35,18 +35,28 @@ export default function GalleryPage() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      fetchPrompts()
-      fetchCategories()
-    } else {
-      setError('Supabase is not configured. Please set up your environment variables.')
+    try {
+      if (isSupabaseConfigured()) {
+        fetchPrompts()
+        fetchCategories()
+      } else {
+        setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error('Supabase configuration error:', error)
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       setLoading(false)
     }
   }, [])
 
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      fetchPrompts()
+    try {
+      if (isSupabaseConfigured()) {
+        fetchPrompts()
+      }
+    } catch (error) {
+      console.error('Supabase configuration error:', error)
     }
   }, [selectedCategory])
 
@@ -112,8 +122,12 @@ export default function GalleryPage() {
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-4 text-left">
             <p className="text-sm text-yellow-800">
               <strong>To fix this:</strong><br/>
-              1. Copy <code className="bg-yellow-100 px-1 rounded">.env.example</code> to <code className="bg-yellow-100 px-1 rounded">.env.local</code><br/>
-              2. Add your Supabase credentials<br/>
+              1. Create a <code className="bg-yellow-100 px-1 rounded">.env.local</code> file in your project root<br/>
+              2. Add your Supabase credentials:<br/>
+              <code className="bg-yellow-100 px-1 rounded block mt-1">
+                NEXT_PUBLIC_SUPABASE_URL=your-project-url<br/>
+                NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+              </code><br/>
               3. Restart the dev server
             </p>
           </div>
@@ -231,9 +245,12 @@ export default function GalleryPage() {
                     </p>
                   </div>
                   
-                  <button className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Use Prompt
-                  </button>
+                  <Link
+                    href={`/prompts/${prompt.id}`}
+                    className="block w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-center"
+                  >
+                    View Details
+                  </Link>
                 </div>
               </div>
             ))}

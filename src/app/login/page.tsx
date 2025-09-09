@@ -16,14 +16,19 @@ export default function LoginPage() {
   const router = useRouter()
 
   useEffect(() => {
-    setSupabaseConfigured(isSupabaseConfigured() || false)
+    try {
+      setSupabaseConfigured(isSupabaseConfigured())
+    } catch (error) {
+      console.error('Supabase configuration error:', error)
+      setSupabaseConfigured(false)
+    }
   }, [])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!supabaseConfigured) {
-      setError('Supabase is not configured. Please set up your environment variables.')
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       return
     }
 
@@ -48,7 +53,7 @@ export default function LoginPage() {
 
   const handleGoogleLogin = async () => {
     if (!supabaseConfigured) {
-      setError('Supabase is not configured. Please set up your environment variables.')
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       return
     }
 

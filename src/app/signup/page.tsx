@@ -21,9 +21,14 @@ export default function SignupPage() {
     
     // Force a client-side check after component mounts
     const checkConfig = () => {
-      const configured = isSupabaseConfigured()
-      console.log('Signup page - Supabase configured:', configured)
-      setSupabaseConfigured(configured)
+      try {
+        const configured = isSupabaseConfigured()
+        console.log('Signup page - Supabase configured:', configured)
+        setSupabaseConfigured(configured)
+      } catch (error) {
+        console.error('Supabase configuration error:', error)
+        setSupabaseConfigured(false)
+      }
     }
     
     // Check immediately
@@ -39,7 +44,7 @@ export default function SignupPage() {
     e.preventDefault()
     
     if (!supabaseConfigured) {
-      setError('Supabase is not configured. Please set up your environment variables.')
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       return
     }
 
@@ -79,7 +84,7 @@ export default function SignupPage() {
 
   const handleGoogleSignup = async () => {
     if (!supabaseConfigured) {
-      setError('Supabase is not configured. Please set up your environment variables.')
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       return
     }
 
@@ -159,7 +164,7 @@ export default function SignupPage() {
             
             {mounted && !supabaseConfigured && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                Supabase is not configured. Please set up your environment variables.
+                Supabase is not configured. Please create a .env.local file with your Supabase credentials.
               </div>
             )}
 

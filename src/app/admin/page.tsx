@@ -30,11 +30,17 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      checkUser()
-      fetchCategories()
-    } else {
-      setError('Supabase is not configured. Please set up your environment variables.')
+    try {
+      if (isSupabaseConfigured()) {
+        checkUser()
+        fetchCategories()
+      } else {
+        setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
+        setLoading(false)
+      }
+    } catch (error) {
+      console.error('Supabase configuration error:', error)
+      setError('Supabase is not configured. Please create a .env.local file with your Supabase credentials.')
       setLoading(false)
     }
   }, [])

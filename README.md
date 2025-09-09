@@ -28,22 +28,25 @@ cd prompt-gallery
 npm install
 ```
 
-### 2. Set up Supabase
+### 2. Set up Environment Variables
 
-1. Create a new project at [supabase.com](https://supabase.com)
-2. Go to Settings > API to get your project URL and anon key
-3. Copy `.env.example` to `.env.local`:
+1. Create a `.env.local` file in your project root:
 
 ```bash
-cp .env.example .env.local
+touch .env.local
 ```
 
-4. Update `.env.local` with your Supabase credentials:
+2. Add your Supabase credentials to `.env.local`:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url_here
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key_here
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
 ```
+
+**To get your Supabase credentials:**
+1. Create a new project at [supabase.com](https://supabase.com)
+2. Go to Settings > API to get your project URL and anon key
+3. Replace the placeholder values in your `.env.local` file
 
 ### 3. Set up Database
 
@@ -93,6 +96,7 @@ src/
 
 - `/` - Homepage with hero section and features
 - `/gallery` - Browse prompts with category filtering and image display
+- `/prompts/[id]` - Individual prompt details page with copy functionality
 - `/login` - User authentication (email/password + Google OAuth)
 - `/signup` - User registration with email confirmation
 - `/admin` - Admin panel for creating and managing prompts (auth-protected)
