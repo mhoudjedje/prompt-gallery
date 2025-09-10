@@ -19,7 +19,7 @@ interface Prompt {
     id: string
     name: string
   }
-  created_by: string
+  user_id: string
   created_at: string
 }
 

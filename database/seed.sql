@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS prompts (
   result_url TEXT,
   model_used TEXT,
   hidden_prompt TEXT NOT NULL,
-  created_by UUID REFERENCES auth.users(id),
+  user_id UUID REFERENCES auth.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -122,7 +122,7 @@ BEGIN
   END IF;
 
   -- Insert sample prompts
-  INSERT INTO prompts (title, description, category_id, result_url, model_used, hidden_prompt, created_by) VALUES
+  INSERT INTO prompts (title, description, category_id, result_url, model_used, hidden_prompt, user_id) VALUES
     (
       'Futuristic City Skyline',
       'A stunning cyberpunk-inspired city with neon lights and flying cars',
@@ -201,7 +201,7 @@ $$ LANGUAGE plpgsql;
 
 -- Step 11: Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_prompts_category_id ON prompts(category_id);
-CREATE INDEX IF NOT EXISTS idx_prompts_created_by ON prompts(created_by);
+CREATE INDEX IF NOT EXISTS idx_prompts_user_id ON prompts(user_id);
 CREATE INDEX IF NOT EXISTS idx_prompts_created_at ON prompts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name);
 CREATE INDEX IF NOT EXISTS idx_unlocks_user_prompt ON unlocks(user_id, prompt_id);
@@ -215,4 +215,4 @@ CREATE INDEX IF NOT EXISTS idx_unlocks_user_prompt ON unlocks(user_id, prompt_id
 -- 3. Insert sample data: 
 --    SELECT insert_sample_prompts();
 -- 4. (Optional) Update sample prompts creator: 
---    UPDATE prompts SET created_by = 'your-user-id' WHERE created_by = '00000000-0000-0000-0000-000000000000';
+--    UPDATE prompts SET user_id = 'your-user-id' WHERE user_id = '00000000-0000-0000-0000-000000000000';

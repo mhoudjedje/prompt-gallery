@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS prompts (
   result_url TEXT,
   model_used TEXT,
   hidden_prompt TEXT NOT NULL,
-  created_by UUID REFERENCES auth.users(id),
+  user_id UUID REFERENCES auth.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -115,7 +115,7 @@ WITH category_ids AS (
     (SELECT id FROM categories WHERE name = 'Business' LIMIT 1) as business_id,
     (SELECT id FROM categories WHERE name = 'Education' LIMIT 1) as education_id
 )
-INSERT INTO prompts (title, description, category_id, result_url, model_used, hidden_prompt, created_by)
+INSERT INTO prompts (title, description, category_id, result_url, model_used, hidden_prompt, user_id)
 SELECT 
   prompt_data.title,
   prompt_data.description,
@@ -130,7 +130,7 @@ SELECT
   prompt_data.result_url,
   prompt_data.model_used,
   prompt_data.hidden_prompt,
-  '00000000-0000-0000-0000-000000000001'::UUID as created_by
+  '00000000-0000-0000-0000-000000000001'::UUID as user_id
 FROM category_ids c
 CROSS JOIN (VALUES
   ('Futuristic City Skyline', 'A stunning cyberpunk-inspired city with neon lights and flying cars', 'Images', 'https://picsum.photos/800/600?random=1', 'DALL-E 3', 'Create a hyper-realistic digital art piece depicting a futuristic cityscape at night. The scene should feature towering skyscrapers with glowing neon signs in various colors (blue, pink, purple, green). Include flying cars with light trails streaking across the sky. The architecture should blend modern glass and steel with cyberpunk aesthetics. Add atmospheric fog and rain effects for mood. Style: photorealistic, cinematic lighting, 8K resolution.'),
@@ -155,7 +155,7 @@ ON CONFLICT DO NOTHING;
 
 -- Step 13: Create indexes for better performance
 CREATE INDEX IF NOT EXISTS idx_prompts_category_id ON prompts(category_id);
-CREATE INDEX IF NOT EXISTS idx_prompts_created_by ON prompts(created_by);
+CREATE INDEX IF NOT EXISTS idx_prompts_user_id ON prompts(user_id);
 CREATE INDEX IF NOT EXISTS idx_prompts_created_at ON prompts(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_categories_name ON categories(name);
 CREATE INDEX IF NOT EXISTS idx_unlocks_user_prompt ON unlocks(user_id, prompt_id);

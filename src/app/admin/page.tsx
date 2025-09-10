@@ -84,6 +84,18 @@ export default function AdminPage() {
     setSuccess(false)
 
     try {
+      // Get the current user to ensure they're still logged in
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        throw new Error(`Authentication error: ${userError.message}`)
+      }
+      
+      if (!currentUser) {
+        throw new Error('You must be logged in to create a prompt')
+      }
+
+      // Insert the prompt with the current user's ID
       const { error } = await supabase
         .from('prompts')
         .insert([{
@@ -93,10 +105,21 @@ export default function AdminPage() {
           result_url: formData.result_url || null,
           model_used: formData.model_used || null,
           category_id: formData.category_id,
-          created_by: user?.id
+          user_id: currentUser.id
         }])
 
-      if (error) throw error
+      if (error) {
+        // Handle specific Supabase errors
+        if (error.code === 'PGRST301') {
+          throw new Error('You do not have permission to create prompts. Please contact an administrator.')
+        } else if (error.code === '23503') {
+          throw new Error('Invalid category selected. Please choose a valid category.')
+        } else if (error.code === '23505') {
+          throw new Error('A prompt with this title already exists. Please choose a different title.')
+        } else {
+          throw new Error(`Database error: ${error.message}`)
+        }
+      }
 
       setSuccess(true)
       setFormData({
@@ -108,6 +131,7 @@ export default function AdminPage() {
         category_id: ''
       })
     } catch (err) {
+      console.error('Error creating prompt:', err)
       setError(err instanceof Error ? err.message : 'Failed to create prompt')
     } finally {
       setSubmitting(false)
