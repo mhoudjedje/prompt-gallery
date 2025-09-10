@@ -24,7 +24,14 @@ export async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
   const isAuthRoute = authRoutes.some(route => pathname.startsWith(route))
 
-  // Redirect to login if trying to access protected route without session
+  // For /admin route, let the client-side component handle authentication
+  // This allows the admin page to show proper error messages instead of redirecting
+  if (pathname === '/admin') {
+    // Let the admin page component handle authentication and role checking
+    return res
+  }
+
+  // Redirect to login if trying to access other protected routes without session
   if (isProtectedRoute && !session) {
     const redirectUrl = new URL('/login', req.url)
     redirectUrl.searchParams.set('redirectTo', pathname)

@@ -43,7 +43,12 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      router.push('/gallery')
+      // Check if there's a redirect parameter
+      const urlParams = new URLSearchParams(window.location.search)
+      const redirectTo = urlParams.get('redirectTo')
+      
+      // Redirect to the intended page or default to gallery
+      router.push(redirectTo || '/gallery')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
