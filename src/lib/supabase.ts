@@ -37,5 +37,5 @@ export const isSupabaseConfigured = () => {
            supabaseAnonKey !== 'your-supabase-anon-key')
 }
 
-// Create Supabase client
+// Create Supabase client for client-side usage
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
