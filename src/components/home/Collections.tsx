@@ -1,3 +1,4 @@
+"use client"
 type CollectionCardProps = {
   icon: string
   title: string

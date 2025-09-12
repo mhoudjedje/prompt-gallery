@@ -1,3 +1,4 @@
+"use client"
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { getTrendingPrompts, searchPrompts, type Prompt } from '@/lib/queries'
