@@ -38,18 +38,16 @@ export default function Trending() {
     setPrompts(rows)
   }
 
-  const cards: GalleryCardProps[] = (prompts.length > 0
-    ? prompts
-    : new Array(8).fill(null).map((_, i) => ({
-        title: i % 2 === 0 ? 'Minimalist Logo Prompt' : 'Portrait Photography',
-        description: i % 2 === 0
-          ? 'Generate unique, modern logo designs with clean aesthetics.'
-          : 'Create stunning portrait concepts with professional lighting.'
-      }))
-  ).map((p: any) => ({
-    title: (p as Prompt).title ?? (p as GalleryCardProps).title,
-    description: (p as Prompt).description ?? (p as GalleryCardProps).description,
+  const placeholder: GalleryCardProps[] = new Array(8).fill(null).map((_, i) => ({
+    title: i % 2 === 0 ? 'Minimalist Logo Prompt' : 'Portrait Photography',
+    description: i % 2 === 0
+      ? 'Generate unique, modern logo designs with clean aesthetics.'
+      : 'Create stunning portrait concepts with professional lighting.'
   }))
+
+  const cards: GalleryCardProps[] = prompts.length > 0
+    ? prompts.map((p: Prompt) => ({ title: p.title, description: p.description || '' }))
+    : placeholder
 
   return (
     <section className="bg-white">

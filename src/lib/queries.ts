@@ -58,7 +58,14 @@ export async function getTrendingPrompts(limit = 8): Promise<Prompt[]> {
       return []
     }
 
-    const mapped: Prompt[] = (data ?? []).map((row: any) => ({
+    const mapped: Prompt[] = (data ?? []).map((row: {
+      id: string
+      title: string
+      description: string | null
+      result_url: string | null
+      category_id: string | null
+      collections?: { name?: string | null } | null
+    }) => ({
       id: row.id,
       title: row.title,
       description: row.description,
@@ -99,7 +106,14 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
     }
 
     const rows = data ?? []
-    const mapped: Prompt[] = rows.map((row: any) => ({
+    const mapped: Prompt[] = rows.map((row: {
+      id: string
+      title: string
+      description: string | null
+      result_url: string | null
+      category_id: string | null
+      collections?: { name?: string | null } | null
+    }) => ({
       id: row.id,
       title: row.title,
       description: row.description,
