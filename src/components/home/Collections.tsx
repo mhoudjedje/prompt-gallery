@@ -14,13 +14,24 @@ function CollectionCard({ icon, title, description }: CollectionCardProps) {
   )
 }
 
+import { useEffect, useState } from 'react'
+import { getCollections, type Collection } from '@/lib/queries'
+
 export default function Collections() {
-  const items: CollectionCardProps[] = [
-    { icon: '🎨', title: 'Design', description: 'Prompts for graphics, UI, branding' },
-    { icon: '📷', title: 'Photography', description: 'Prompts to generate photo concepts' },
-    { icon: '💼', title: 'Business', description: 'Prompts for marketing, copy, and growth' },
-    { icon: '⭐', title: 'Art & Fun', description: 'Creative ideas for fun projects' },
-  ]
+  const [collections, setCollections] = useState<Collection[]>([])
+
+  useEffect(() => {
+    getCollections().then((rows) => setCollections(rows))
+  }, [])
+
+  const items: CollectionCardProps[] = collections.length > 0
+    ? collections.map((c) => ({ icon: '⭐', title: c.name, description: c.description || '' }))
+    : [
+        { icon: '🎨', title: 'Design', description: 'Prompts for graphics, UI, branding' },
+        { icon: '📷', title: 'Photography', description: 'Prompts to generate photo concepts' },
+        { icon: '💼', title: 'Business', description: 'Prompts for marketing, copy, and growth' },
+        { icon: '⭐', title: 'Art & Fun', description: 'Creative ideas for fun projects' },
+      ]
 
   return (
     <section className="bg-white">
