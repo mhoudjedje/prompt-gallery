@@ -6,6 +6,7 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 
 export default function Header() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
+  const [email, setEmail] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -14,6 +15,7 @@ export default function Header() {
       
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null)
+        setEmail(session?.user?.email ?? null)
       })
 
       return () => subscription.unsubscribe()
@@ -26,6 +28,7 @@ export default function Header() {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
+      setEmail(user?.email ?? null)
     } catch (error) {
       console.error('Error checking user:', error)
     } finally {
@@ -58,9 +61,9 @@ export default function Header() {
             <Link href="/gallery" className="text-gray-600 hover:text-gray-900">
               Gallery
             </Link>
-            {user && (
+            {email === 'houdjedjem@gmail.com' && (
               <Link href="/admin" className="text-gray-600 hover:text-gray-900">
-                Admin
+                <span className="text-red-600 font-bold">Admin</span>
               </Link>
             )}
           </nav>
