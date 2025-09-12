@@ -64,14 +64,16 @@ export async function getTrendingPrompts(limit = 8): Promise<Prompt[]> {
       description: string | null
       result_url: string | null
       category_id: string | null
-      collections?: { name?: string | null } | null
+      collections?: { name?: string | null } | { name?: string | null }[] | null
     }) => ({
       id: row.id,
       title: row.title,
       description: row.description,
       result_url: row.result_url,
       category_id: row.category_id,
-      collection_name: row.collections?.name ?? null,
+      collection_name: Array.isArray(row.collections)
+        ? (row.collections[0]?.name ?? null)
+        : (row.collections?.name ?? null),
     }))
 
     console.log('[getTrendingPrompts] rows:', mapped.length)
@@ -112,14 +114,16 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
       description: string | null
       result_url: string | null
       category_id: string | null
-      collections?: { name?: string | null } | null
+      collections?: { name?: string | null } | { name?: string | null }[] | null
     }) => ({
       id: row.id,
       title: row.title,
       description: row.description,
       result_url: row.result_url,
       category_id: row.category_id,
-      collection_name: row.collections?.name ?? null,
+      collection_name: Array.isArray(row.collections)
+        ? (row.collections[0]?.name ?? null)
+        : (row.collections?.name ?? null),
     }))
 
     console.debug('[searchPrompts] results:', mapped.length)
