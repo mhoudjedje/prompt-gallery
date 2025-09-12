@@ -82,14 +82,15 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
   }
 
   try {
-    if (!query.trim()) return []
+    const trimmed = query?.trim() ?? ''
+    if (!trimmed) return []
 
-    // Simple ILIKE search across title and description for MVP
+    console.debug('[searchPrompts] query:', trimmed)
+
     const { data, error } = await supabase
       .from('prompts')
       .select('id, title, description, result_url, category_id, collections(name)')
-      .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
-      .order('created_at', { ascending: false })
+      .textSearch('search_vector', trimmed, { type: 'websearch' })
       .limit(24)
 
     if (error) {
@@ -97,7 +98,8 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
       return []
     }
 
-    const mapped: Prompt[] = (data ?? []).map((row: any) => ({
+    const rows = data ?? []
+    const mapped: Prompt[] = rows.map((row: any) => ({
       id: row.id,
       title: row.title,
       description: row.description,
@@ -106,7 +108,7 @@ export async function searchPrompts(query: string): Promise<Prompt[]> {
       collection_name: row.collections?.name ?? null,
     }))
 
-    console.log('[searchPrompts] rows:', mapped.length)
+    console.debug('[searchPrompts] results:', mapped.length)
     return mapped
   } catch (err) {
     console.error('[searchPrompts] exception:', err)
