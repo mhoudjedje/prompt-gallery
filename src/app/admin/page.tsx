@@ -1,3 +1,4 @@
+import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -12,6 +13,7 @@ interface UserProfile {
 }
 
 export default function AdminPage() {
+  // ...existing code...
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
@@ -218,12 +220,18 @@ FOR INSERT WITH CHECK (auth.uid() = id);`)
 
   // Show admin panel for admin users
   if (user && profile && profile.role === 'admin') {
-    return <AdminPanel />
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <UnifiedNavbar />
+        <AdminPanel />
+      </div>
+    );
   }
 
   // Fallback loading state
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <UnifiedNavbar />
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
         <p className="mt-4 text-gray-600">Finalizing access...</p>

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import Header from '@/components/Header'
+import UnifiedNavbar from '@/components/navigation/UnifiedNavbar'
 import Footer from '@/components/Footer'
 
 export default function LoginPage() {
@@ -82,7 +82,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+  <UnifiedNavbar />
       
       <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">

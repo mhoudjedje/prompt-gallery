@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Link from 'next/link'
-import Header from '@/components/Header'
+import UnifiedNavbar from '@/components/navigation/UnifiedNavbar'
 import Footer from '@/components/Footer'
 
 export default function SignupPage() {
@@ -109,7 +109,7 @@ export default function SignupPage() {
   if (success) {
     return (
       <div className="min-h-screen bg-gray-50">
-        <Header />
+  <UnifiedNavbar />
         
         <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
           <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -136,7 +136,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
+  <UnifiedNavbar />
       
       <div className="flex flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">

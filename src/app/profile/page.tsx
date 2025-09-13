@@ -1,3 +1,4 @@
+import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -23,6 +24,34 @@ export default function ProfilePage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const { addToast, ToastContainer } = useToast();
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <UnifiedNavbar />
+      {isLoading || !profile ? (
+        <div className="flex items-center justify-center h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="ml-4 text-gray-600">Loading profile...</p>
+        </div>
+      ) : (
+        <>
+          {/* Page Header */}
+          <div className="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
+            {/* ...existing code... */}
+            {/* Profile Grid */}
+            {/* ...existing code... */}
+          </div>
+          <ToastContainer />
+          <PasswordChangeModal
+            isOpen={showPasswordModal}
+            onClose={() => setShowPasswordModal(false)}
+            onConfirm={handlePasswordConfirm}
+            isLoading={isUpdatingPassword}
+          />
+        </>
+      )}
+    </div>
+  );
 
   useEffect(() => {
     const loadProfileData = async () => {
