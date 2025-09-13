@@ -26,6 +26,60 @@ export default function ProfilePage() {
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const { addToast, ToastContainer } = useToast();
 
+  useEffect(() => {
+    const loadProfileData = async () => {
+      try {
+        const { data: { user }, error } = await supabase.auth.getUser();
+        if (error) {
+          console.error('Error fetching user:', error);
+          addToast({
+            type: 'error',
+            title: 'Authentication Error',
+            message: 'Please log in to view your profile'
+          });
+          setIsLoading(false);
+          return;
+        }
+        if (!user) {
+          addToast({
+            type: 'error',
+            title: 'Not Authenticated',
+            message: 'Please log in to view your profile'
+          });
+          setIsLoading(false);
+          return;
+        }
+        setUser(user);
+        // Load all profile data in parallel
+        const [
+          profileData,
+          connectedAccountsData,
+          notificationSettingsData,
+          userActivityData
+        ] = await Promise.all([
+          profileApi.getProfile(user.id),
+          profileApi.getConnectedAccounts(user.id),
+          profileApi.getNotificationSettings(user.id),
+          profileApi.getUserActivity(user.id)
+        ]);
+        setProfile(profileData);
+        setConnectedAccounts(connectedAccountsData);
+        setNotificationSettings(notificationSettingsData);
+        setUserActivity(userActivityData);
+      } catch (error) {
+        console.error('Error loading profile data:', error);
+        addToast({
+          type: 'error',
+          title: 'Error Loading Profile',
+          message: 'Failed to load your profile data. Please try again.'
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadProfileData();
+  }, [addToast]);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <UnifiedNavbar />
