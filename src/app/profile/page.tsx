@@ -454,19 +454,22 @@ export default function ProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Column */}
           <div className="space-y-6">
-            <ProfileDetailsCard
-              name={profile.full_name || profile.email?.split('@')[0] || 'User'}
-              email={profile.email}
-              avatarUrl={profile.avatar_url}
-              onNameChange={handleNameChange}
-              onAvatarChange={handleAvatarChange}
-              onAvatarRemove={handleAvatarRemove}
-            />
-
-            <SubscriptionCard
-              subscription={profile.subscription_status === 'premium' ? 'Pro' : 'Free'}
-              role={profile.role}
-            />
+            {profile && (
+              <>
+                <ProfileDetailsCard
+                  name={profile!.full_name || profile!.email?.split('@')[0] || 'User'}
+                  email={profile!.email}
+                  avatarUrl={profile!.avatar_url}
+                  onNameChange={handleNameChange}
+                  onAvatarChange={handleAvatarChange}
+                  onAvatarRemove={handleAvatarRemove}
+                />
+                <SubscriptionCard
+                  subscription={profile!.subscription_status === 'premium' ? 'Pro' : 'Free'}
+                  role={profile!.role}
+                />
+              </>
+            )}
 
             <ConnectedAccounts
               googleConnected={connectedAccounts.find(acc => acc.provider === 'google')?.connected || false}
