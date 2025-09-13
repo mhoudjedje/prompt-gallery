@@ -162,7 +162,7 @@ export default function ProfilePage() {
     if (!user || !profile?.avatar_url) return;
 
     try {
-      const success = await profileApi.updateProfile(user.id, { avatar_url: null });
+      const success = await profileApi.updateProfile(user.id, { avatar_url: undefined });
       if (success) {
         setProfile(prev => prev ? { ...prev, avatar_url: undefined } : null);
         addToast({
@@ -269,7 +269,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleTwoFactorToggle = async (_enabled: boolean) => {
+  const handleTwoFactorToggle = async () => {
     // Stub for now - 2FA implementation would go here
     addToast({
       type: 'info',

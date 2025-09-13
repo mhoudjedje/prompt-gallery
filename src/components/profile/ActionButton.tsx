@@ -4,6 +4,7 @@ interface ActionButtonProps {
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   children: React.ReactNode;
+  className?: string;
 }
 
 export default function ActionButton({ 
@@ -11,7 +12,8 @@ export default function ActionButton({
   variant = 'primary', 
   size = 'md', 
   disabled = false,
-  children 
+  children,
+  className = ''
 }: ActionButtonProps) {
   const baseClasses = "font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
   
@@ -33,7 +35,7 @@ export default function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses}`}
+      className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${disabledClasses} ${className}`}
     >
       {children}
     </button>
