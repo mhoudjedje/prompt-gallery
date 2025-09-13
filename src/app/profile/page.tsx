@@ -1,5 +1,6 @@
-import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
+
 'use client';
+import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
