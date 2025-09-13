@@ -198,7 +198,7 @@ FOR INSERT WITH CHECK (auth.uid() = id);`)
             </p>
             <div className="space-y-2">
               <button
-                onClick={() => router.push('/gallery')}
+                onClick={() => router.push('/')}
                 className="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
               >
                 Go to Gallery

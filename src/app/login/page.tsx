@@ -47,8 +47,8 @@ export default function LoginPage() {
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo')
       
-      // Redirect to the intended page or default to gallery
-      router.push(redirectTo || '/gallery')
+      // Redirect to the intended page or default to home
+      router.push(redirectTo || '/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -69,7 +69,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/gallery`
+          redirectTo: `${window.location.origin}/`
         }
       })
 

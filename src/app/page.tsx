@@ -1,4 +1,4 @@
-import HeaderLanding from "@/components/home/HeaderLanding";
+import UnifiedHeader from "@/components/navigation/UnifiedHeader";
 import Hero from "@/components/home/Hero";
 import Collections from "@/components/home/Collections";
 import Trending from "@/components/home/Trending";
@@ -8,7 +8,7 @@ import FooterLanding from "@/components/home/FooterLanding";
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      <HeaderLanding />
+      <UnifiedHeader />
       <Hero />
       <Collections />
       <Trending />

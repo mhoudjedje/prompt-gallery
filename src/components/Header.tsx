@@ -3,19 +3,28 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { profileApi } from '@/lib/supabase/profile'
 
 export default function Header() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [email, setEmail] = useState<string | null>(null)
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     if (isSupabaseConfigured()) {
       checkUser()
       
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
         setUser(session?.user ?? null)
         setEmail(session?.user?.email ?? null)
+        
+        // Load profile data when user changes
+        if (session?.user) {
+          await loadUserProfile(session.user.id)
+        } else {
+          setAvatarUrl(null)
+        }
       })
 
       return () => subscription.unsubscribe()
@@ -29,10 +38,24 @@ export default function Header() {
       const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
       setEmail(user?.email ?? null)
+      
+      if (user) {
+        await loadUserProfile(user.id)
+      }
     } catch (error) {
       console.error('Error checking user:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const loadUserProfile = async (userId: string) => {
+    try {
+      // TODO: Replace with real profile API call
+      const profile = await profileApi.getProfile(userId)
+      setAvatarUrl(profile?.avatar_url || null)
+    } catch (error) {
+      console.error('Error loading user profile:', error)
     }
   }
 
@@ -73,9 +96,29 @@ export default function Header() {
               <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
             ) : user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">
-                  {user.email}
-                </span>
+                <Link
+                  href="/profile"
+                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                >
+                  <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
+                    {avatarUrl ? (
+                      <img
+                        src={avatarUrl}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
+                        <span className="text-sm font-medium text-indigo-600">
+                          {email?.charAt(0).toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm text-gray-600 hidden sm:block">
+                    {user.email}
+                  </span>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="text-gray-600 hover:text-gray-900 text-sm"

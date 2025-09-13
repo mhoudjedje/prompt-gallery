@@ -38,9 +38,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(redirectUrl)
   }
 
-  // Redirect to gallery if trying to access auth routes while logged in
+  // Redirect to home if trying to access auth routes while logged in
   if (isAuthRoute && session) {
-    return NextResponse.redirect(new URL('/gallery', req.url))
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   return res
