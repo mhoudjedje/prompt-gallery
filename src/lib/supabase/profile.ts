@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '../supabase';
 
 // Types for profile data
 export interface UserProfile {

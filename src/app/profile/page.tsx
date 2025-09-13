@@ -19,7 +19,7 @@ export default function ProfilePage() {
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(null);
   const [userActivity, setUserActivity] = useState<UserActivity | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const { addToast, ToastContainer } = useToast();
@@ -269,7 +269,7 @@ export default function ProfilePage() {
     }
   };
 
-  const handleTwoFactorToggle = async (enabled: boolean) => {
+  const handleTwoFactorToggle = async (_enabled: boolean) => {
     // Stub for now - 2FA implementation would go here
     addToast({
       type: 'info',
