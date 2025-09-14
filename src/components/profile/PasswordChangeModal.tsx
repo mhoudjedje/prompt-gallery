@@ -8,9 +8,9 @@ interface Props {
 }
 
 export default function PasswordChangeModal({ isOpen, onClose, onConfirm, isLoading }: Props) {
-	if (!isOpen) return null
-
 	const [value, setValue] = React.useState('')
+
+	if (!isOpen) return null
 
 	return (
 		<div className="fixed inset-0 flex items-center justify-center bg-black/40">
