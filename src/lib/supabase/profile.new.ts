@@ -141,36 +141,33 @@ export const profileApi = {
     }
   },
 
-  // Update connected account status
+  // Update connected account
   async updateConnectedAccount(
-    userId: string, 
-    provider: string, 
+    userId: string,
+    provider: string,
     connected: boolean
-  ): Promise<boolean> {
+  ): Promise<SupabaseResponse<ConnectedAccount>> {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('connected_accounts')
         .upsert({
           user_id: userId,
           provider,
           connected,
           updated_at: new Date().toISOString()
-        });
+        })
+        .select()
+        .single();
 
-      if (error) {
-        console.error('Error updating connected account:', error);
-        return false;
-      }
-
-      return true;
+      return { data, error };
     } catch (error) {
       console.error('Error updating connected account:', error);
-      return false;
+      return { data: null, error: error as Error };
     }
   },
 
   // Get notification settings
-  async getNotificationSettings(userId: string): Promise<NotificationSettings | null> {
+  async getNotificationSettings(userId: string): Promise<SupabaseResponse<NotificationSettings>> {
     try {
       const { data, error } = await supabase
         .from('notifications_settings')
@@ -178,15 +175,10 @@ export const profileApi = {
         .eq('user_id', userId)
         .single();
 
-      if (error) {
-        console.error('Error fetching notification settings:', error);
-        return null;
-      }
-
-      return data;
+      return { data, error };
     } catch (error) {
       console.error('Error fetching notification settings:', error);
-      return null;
+      return { data: null, error: error as Error };
     }
   },
 
@@ -194,30 +186,27 @@ export const profileApi = {
   async updateNotificationSettings(
     userId: string, 
     settings: Partial<NotificationSettings>
-  ): Promise<boolean> {
+  ): Promise<SupabaseResponse<NotificationSettings>> {
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('notifications_settings')
         .upsert({
           user_id: userId,
           ...settings,
           updated_at: new Date().toISOString()
-        });
+        })
+        .select()
+        .single();
 
-      if (error) {
-        console.error('Error updating notification settings:', error);
-        return false;
-      }
-
-      return true;
+      return { data, error };
     } catch (error) {
       console.error('Error updating notification settings:', error);
-      return false;
+      return { data: null, error: error as Error };
     }
   },
 
   // Get user activity
-  async getUserActivity(userId: string): Promise<UserActivity | null> {
+  async getUserActivity(userId: string): Promise<SupabaseResponse<UserActivity>> {
     try {
       const { data, error } = await supabase
         .from('user_activity')
@@ -225,58 +214,43 @@ export const profileApi = {
         .eq('user_id', userId)
         .single();
 
-      if (error) {
-        console.error('Error fetching user activity:', error);
-        return null;
-      }
-
-      return data;
+      return { data, error };
     } catch (error) {
       console.error('Error fetching user activity:', error);
-      return null;
+      return { data: null, error: error as Error };
     }
   },
 
   // Update password
-  async updatePassword(newPassword: string): Promise<boolean> {
+  async updatePassword(newPassword: string): Promise<SupabaseResponse<void>> {
     try {
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
 
-      if (error) {
-        console.error('Error updating password:', error);
-        return false;
-      }
-
-      return true;
+      return { data: error ? null : undefined, error };
     } catch (error) {
       console.error('Error updating password:', error);
-      return false;
+      return { data: null, error: error as Error };
     }
   },
 
   // Delete user account
-  async deleteAccount(userId: string): Promise<boolean> {
+  async deleteAccount(userId: string): Promise<SupabaseResponse<void>> {
     try {
-      // Delete from user_profiles table (this should cascade to other tables)
       const { error } = await supabase
         .from('user_profiles')
         .delete()
         .eq('id', userId);
 
-      if (error) {
-        console.error('Error deleting account:', error);
-        return false;
+      if (!error) {
+        await supabase.auth.signOut();
       }
 
-      // Sign out the user
-      await supabase.auth.signOut();
-
-      return true;
+      return { data: error ? null : undefined, error };
     } catch (error) {
       console.error('Error deleting account:', error);
-      return false;
+      return { data: null, error: error as Error };
     }
   }
 };

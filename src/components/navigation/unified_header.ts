@@ -2,62 +2,80 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { profileApi } from '@/lib/supabase/profile'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 export default function UnifiedHeader() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
-  const [email, setEmail] = useState<string | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
-    if (isSupabaseConfigured()) {
-      checkUser()
-      
-      const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-        setUser(session?.user ?? null)
-        setEmail(session?.user?.email ?? null)
+    let mounted = true;
+
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
         
-        // Load profile data when user changes
-        if (session?.user) {
-          await loadUserProfile(session.user.id)
+        if (mounted) {
+          setUser(user)
+          
+          // Load avatar if user exists
+          if (user) {
+            await loadUserProfile(user.id)
+          }
+        }
+      } catch (error) {
+        console.error('Error checking user:', error)
+        if (mounted) {
+          setUser(null)
+          setAvatarUrl(null)
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    const loadUserProfile = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('avatar_url')
+          .eq('id', userId)
+          .single()
+        
+        if (!error && data?.avatar_url && mounted) {
+          setAvatarUrl(data.avatar_url)
+        }
+      } catch (error) {
+        // Silently fail - avatar is not critical
+        console.error('Error loading user profile:', error)
+      }
+    }
+
+    checkUser()
+    
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (mounted) {
+        const newUser = session?.user ?? null
+        setUser(newUser)
+        
+        if (newUser) {
+          await loadUserProfile(newUser.id)
         } else {
           setAvatarUrl(null)
         }
-      })
-
-      return () => subscription.unsubscribe()
-    } else {
-      setLoading(false)
-    }
-  }, [])
-
-  const checkUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setEmail(user?.email ?? null)
-      
-      if (user) {
-        await loadUserProfile(user.id)
       }
-    } catch (error) {
-      console.error('Error checking user:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
+    })
 
-  const loadUserProfile = async (userId: string) => {
-    try {
-      // TODO: Replace with real profile API call
-      const profile = await profileApi.getProfile(userId)
-      setAvatarUrl(profile?.avatar_url || null)
-    } catch (error) {
-      console.error('Error loading user profile:', error)
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
     }
-  }
+  }, [supabase])
 
   const handleLogout = async () => {
     try {
@@ -79,8 +97,6 @@ export default function UnifiedHeader() {
             <nav className="hidden md:flex items-center space-x-6 text-sm">
               <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
               <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="w-12 h-4 bg-gray-200 rounded animate-pulse"></div>
             </nav>
           </div>
           <div className="flex items-center space-x-4">
@@ -93,6 +109,8 @@ export default function UnifiedHeader() {
 
   // Show authenticated header
   if (user) {
+    const isAdmin = user.email === 'houdjedjem@gmail.com'
+    
     return (
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -110,7 +128,7 @@ export default function UnifiedHeader() {
               <Link href="/gallery" className="text-gray-600 hover:text-gray-900">
                 Gallery
               </Link>
-              {email === 'houdjedjem@gmail.com' && (
+              {isAdmin && (
                 <Link href="/admin" className="text-gray-600 hover:text-gray-900">
                   <span className="text-red-600 font-bold">Admin</span>
                 </Link>
@@ -118,37 +136,35 @@ export default function UnifiedHeader() {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-4">
-                <Link
-                  href="/profile"
-                  className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
-                >
-                  <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
-                    {avatarUrl ? (
-                      <img
-                        src={avatarUrl}
-                        alt="Profile"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
-                        <span className="text-sm font-medium text-indigo-600">
-                          {email?.charAt(0).toUpperCase() || 'U'}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-sm text-gray-600 hidden sm:block">
-                    {email}
-                  </span>
-                </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-gray-600 hover:text-gray-900 text-sm"
-                >
-                  Logout
-                </button>
-              </div>
+              <Link
+                href="/profile"
+                className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+              >
+                <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-indigo-100 flex items-center justify-center">
+                      <span className="text-sm font-medium text-indigo-600">
+                        {user.email?.charAt(0).toUpperCase() || 'U'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <span className="text-sm text-gray-600 hidden sm:block">
+                  {user.email || 'Unknown'}
+                </span>
+              </Link>
+              <button
+                onClick={handleLogout}
+                className="text-gray-600 hover:text-gray-900 text-sm"
+              >
+                Logout
+              </button>
             </div>
           </div>
         </div>
