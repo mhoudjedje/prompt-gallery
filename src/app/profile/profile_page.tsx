@@ -256,8 +256,8 @@ export default function ProfilePage() {
           {/* Left Column */}
           <div className="space-y-6">
             <ProfileDetailsCard
-              name={profile.full_name || profile.email.split('@')[0]}
-              email={profile.email}
+              name={profile.full_name || (profile.email ? profile.email.split('@')[0] : 'User')}
+              email={profile.email ?? ''}
               avatarUrl={profile.avatar_url}
               onNameChange={(name) => handleUpdateProfile({ full_name: name })}
               onAvatarChange={handleAvatarChange}
@@ -266,7 +266,7 @@ export default function ProfilePage() {
 
             <SubscriptionCard 
               subscription={profile.subscription_status === 'premium' ? 'Pro' : 'Free'} 
-              role={profile.role} 
+              role={profile.role ?? 'user'} 
             />
 
             <ConnectedAccounts 
