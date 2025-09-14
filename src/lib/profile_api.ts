@@ -28,7 +28,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<UserProfile>(null, error as Error);
     }
   },
 
@@ -48,7 +48,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<UserProfile>(null, error as Error);
     }
   },
 
@@ -81,7 +81,7 @@ export const profileApi = {
 
       return createResponse(data.publicUrl);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<string>(null, error as Error);
     }
   },
 
@@ -95,7 +95,7 @@ export const profileApi = {
       // Don't throw error if file doesn't exist, just continue
       return createResponse(true);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<boolean>(null, error as Error);
     }
   },
 
@@ -111,7 +111,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data || []);
     } catch (error) {
-      return createResponse(null, error as Error);
+  return createResponse<ConnectedAccount[]>(null as unknown as ConnectedAccount[], error as Error);
     }
   },
 
@@ -166,7 +166,7 @@ export const profileApi = {
 
       return createResponse(result);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<ConnectedAccount>(null, error as Error);
     }
   },
 
@@ -199,7 +199,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<NotificationSettings>(null, error as Error);
     }
   },
 
@@ -222,7 +222,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<NotificationSettings>(null, error as Error);
     }
   },
 
@@ -256,7 +256,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(data);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<UserActivity>(null, error as Error);
     }
   },
 
@@ -270,7 +270,7 @@ export const profileApi = {
       if (error) throw error;
       return createResponse(true);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<boolean>(null, error as Error);
     }
   },
 
@@ -290,7 +290,7 @@ export const profileApi = {
       
       return createResponse(true);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<boolean>(null, error as Error);
     }
   },
 
@@ -329,7 +329,7 @@ export const profileApi = {
 
       return createResponse(profileData);
     } catch (error) {
-      return createResponse(null, error as Error);
+      return createResponse<ProfileData>(null, error as Error);
     }
   }
 };
