@@ -1,6 +1,6 @@
 export interface UserProfile {
   id: string
-  email: string
+  email?: string
   full_name?: string
   avatar_url?: string
   subscription_status?: 'free' | 'premium' | string
