@@ -23,4 +23,11 @@ export interface UserActivity {
 }
 
 export type { UserProfile as Profile }
-// Placeholder - content to be added
+export type ApiResponse<T> = { data?: T | null; error?: { message?: string } | null }
+
+export interface ProfileData {
+  profile: UserProfile
+  connectedAccounts: ConnectedAccount[]
+  notificationSettings: NotificationSettings
+  userActivity: UserActivity
+}
