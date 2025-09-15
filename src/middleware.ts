@@ -2,7 +2,22 @@ import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+// Check if Supabase is configured
+function isSupabaseConfigured() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  
+  return !!(url && key && 
+           url !== 'https://your-project-id.supabase.co' && 
+           key !== 'your-supabase-anon-key')
+}
+
 export async function middleware(req: NextRequest) {
+  // Skip middleware if Supabase is not configured
+  if (!isSupabaseConfigured()) {
+    return NextResponse.next()
+  }
+
   const res = NextResponse.next()
   const pathname = req.nextUrl.pathname
 
