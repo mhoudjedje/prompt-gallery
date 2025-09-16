@@ -1,57 +1,139 @@
 "use client";
 
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useSession, useSupabaseClient } from '@supabase/auth-helpers-react';
 import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { User } from '@supabase/supabase-js';
 
 export default function UnifiedNavbar() {
-  const session = useSession();
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const router = useRouter();
-  const supabase = useSupabaseClient();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (session) {
-      // Redirect to profile page after login
-      router.push('/profile');
-    }
-  }, [session, router]);
+    let mounted = true;
 
-  async function signOut() {
-    await supabase.auth.signOut();
-    router.push('/login');
+    const getUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (mounted) {
+          setUser(user);
+          if (user) {
+            await loadUserAvatar(user.id);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading user:', error);
+        if (mounted) {
+          setUser(null);
+          setAvatarUrl(null);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    const loadUserAvatar = async (userId: string) => {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('avatar_url')
+          .eq('id', userId)
+          .single();
+
+        if (!error && data?.avatar_url && mounted) {
+          setAvatarUrl(data.avatar_url);
+        }
+      } catch (error) {
+        console.error('Error loading avatar:', error);
+      }
+    };
+
+    getUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (mounted) {
+        const newUser = session?.user ?? null;
+        setUser(newUser);
+        if (newUser) {
+          await loadUserAvatar(newUser.id);
+        } else {
+          setAvatarUrl(null);
+        }
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const handleSignOut = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <nav className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
+        <Link href="/" className="text-xl font-bold text-gray-900">
+          Prompt Gallery
+        </Link>
+        <div className="flex items-center gap-4">
+          <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
+        </div>
+      </nav>
+    );
   }
 
   return (
-    <nav className="flex items-center space-x-4">
-      <Link href="/" className="text-gray-700 hover:text-gray-900">
-        Home
+    <nav className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
+      <Link href="/" className="text-xl font-bold text-gray-900">
+        Prompt Gallery
       </Link>
-      <Link href="/gallery" className="text-gray-700 hover:text-gray-900">
-        Gallery
-      </Link>
-      {session ? (
-        <>
-          <Link href="/profile" className="text-gray-700 hover:text-gray-900">
-            Profile
+
+      {user ? (
+        <div className="flex items-center gap-4">
+          <Link href="/profile" className="flex items-center gap-2 hover:opacity-80">
+            <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold hover:ring-2 ring-blue-500 overflow-hidden">
+              {avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{user.email?.[0]?.toUpperCase() || 'U'}</span>
+              )}
+            </div>
           </Link>
-          <button onClick={signOut} className="text-gray-700 hover:text-gray-900">
-            Sign Out
+          <button
+            className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 border"
+            onClick={handleSignOut}
+          >
+            Logout
           </button>
-        </>
+        </div>
       ) : (
-        <>
-          <Link href="/login" className="text-gray-700 hover:text-gray-900">
-            Log In
+        <div className="flex items-center gap-4">
+          <Link href="/login" className="text-gray-700 hover:text-blue-600">
+            Sign In
           </Link>
-          <Link href="/signup" className="text-gray-700 hover:text-gray-900">
+          <Link href="/signup" className="px-3 py-1 rounded bg-blue-600 text-white hover:bg-blue-700">
             Sign Up
           </Link>
-        </>
+        </div>
       )}
-      <Link href="/admin" className="text-gray-700 hover:text-gray-900">
-        Admin
-      </Link>
     </nav>
   );
 }

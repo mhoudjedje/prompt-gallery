@@ -174,7 +174,7 @@ export const profileApi = {
   async getNotificationSettings(userId: string): Promise<ApiResponse<NotificationSettings>> {
     try {
       const { data, error } = await supabase
-        .from('notification_settings')
+        .from('notifications_settings')
         .select('*')
         .eq('user_id', userId)
         .single();
@@ -182,7 +182,7 @@ export const profileApi = {
       if (error && error.code === 'PGRST116') {
         // No settings found, create default
         const { data: newSettings, error: createError } = await supabase
-          .from('notification_settings')
+          .from('notifications_settings')
           .insert({
             user_id: userId,
             newsletter_enabled: true,
@@ -210,7 +210,7 @@ export const profileApi = {
   ): Promise<ApiResponse<NotificationSettings>> {
     try {
       const { data, error } = await supabase
-        .from('notification_settings')
+        .from('notifications_settings')
         .update({ 
           ...updates, 
           updated_at: new Date().toISOString() 

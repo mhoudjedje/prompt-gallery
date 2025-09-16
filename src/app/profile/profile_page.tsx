@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useToast } from '@/hooks/useToast';
-import { profileApi } from '@/lib/profileApi';
+import { profileApi } from '@/lib/profile_api';
 import type {
   UserProfile,
   ConnectedAccount,
