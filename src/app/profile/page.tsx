@@ -4,14 +4,13 @@ import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
 import ClientProfilePage from './profile_page';
 
 export default async function ProfilePage() {
-  const cookieStore = cookies();
-  const supabase = createServerComponentClient({ cookies: () => cookieStore });
+  const supabase = createServerComponentClient({ cookies });
 
   const {
-    data: { user },
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (!user) {
+  if (!session) {
     redirect('/login');
   }
 

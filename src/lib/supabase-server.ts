@@ -15,13 +15,11 @@ if (!supabaseUrl || !supabaseAnonKey) {
 // Create Supabase client for server-side usage
 export const createServerClient = async () => {
   const cookieStore = await cookies()
-  
+
   return createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
       storage: {
-        getItem: (key: string) => {
-          return cookieStore.get(key)?.value || null
-        },
+        getItem: (key: string) => cookieStore.get(key)?.value ?? null,
         setItem: (_key: string, _value: string) => {
           // Server-side doesn't need to set cookies
         },
@@ -29,6 +27,8 @@ export const createServerClient = async () => {
           // Server-side doesn't need to remove cookies
         },
       },
+      persistSession: true,
+      autoRefreshToken: true,
     },
   })
 }
