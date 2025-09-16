@@ -10,6 +10,7 @@ export default function UnifiedNavbar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
   const supabase = createClientComponentClient();
 
@@ -22,7 +23,8 @@ export default function UnifiedNavbar() {
         if (mounted) {
           setUser(user);
           if (user) {
-            await loadUserAvatar(user.id);
+            // Load avatar in background to avoid delaying navbar render
+            void loadUserAvatar(user.id);
           }
         }
       } catch (error) {
@@ -40,6 +42,7 @@ export default function UnifiedNavbar() {
 
     const loadUserAvatar = async (userId: string) => {
       try {
+        if (mounted) setAvatarLoading(true);
         const { data, error } = await supabase
           .from('user_profiles')
           .select('avatar_url')
@@ -51,6 +54,8 @@ export default function UnifiedNavbar() {
         }
       } catch (error) {
         console.error('Error loading avatar:', error);
+      } finally {
+        if (mounted) setAvatarLoading(false);
       }
     };
 
@@ -61,7 +66,8 @@ export default function UnifiedNavbar() {
         const newUser = session?.user ?? null;
         setUser(newUser);
         if (newUser) {
-          await loadUserAvatar(newUser.id);
+          // Load avatar without blocking UI updates
+          void loadUserAvatar(newUser.id);
         } else {
           setAvatarUrl(null);
         }
@@ -78,6 +84,7 @@ export default function UnifiedNavbar() {
     try {
       await supabase.auth.signOut();
       router.push('/');
+      router.refresh();
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -106,7 +113,9 @@ export default function UnifiedNavbar() {
         <div className="flex items-center gap-4">
           <Link href="/profile" className="flex items-center gap-2 hover:opacity-80">
             <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold hover:ring-2 ring-blue-500 overflow-hidden">
-              {avatarUrl ? (
+              {avatarLoading ? (
+                <div className="w-full h-full bg-gray-300 animate-pulse" />
+              ) : avatarUrl ? (
                 <img
                   src={avatarUrl}
                   alt="Profile"
