@@ -115,7 +115,13 @@ export default function UnifiedNavbar() {
 
       {user ? (
         <div className="flex items-center gap-4">
-          <Link href="/profile" prefetch={false} className="flex items-center gap-2 hover:opacity-80">
+          <button
+            type="button"
+            aria-label="Open profile"
+            title="Profile"
+            onClick={() => router.push('/profile')}
+            className="flex items-center gap-2 hover:opacity-80"
+          >
             <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold hover:ring-2 ring-blue-500 overflow-hidden">
               {avatarLoading ? (
                 <div className="w-full h-full bg-gray-300 animate-pulse" />
@@ -129,7 +135,7 @@ export default function UnifiedNavbar() {
                 <span>{user.email?.[0]?.toUpperCase() || 'U'}</span>
               )}
             </div>
-          </Link>
+          </button>
           <button
             className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 text-sm text-gray-700 border"
             onClick={handleSignOut}

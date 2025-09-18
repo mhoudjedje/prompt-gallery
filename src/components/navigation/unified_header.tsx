@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { getClientSupabase } from '@/lib/supabase-browser'
 
 export default function UnifiedHeader() {
@@ -9,6 +10,7 @@ export default function UnifiedHeader() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const supabase = getClientSupabase()
+  const router = useRouter()
 
   useEffect(() => {
     let mounted = true;
@@ -136,9 +138,12 @@ export default function UnifiedHeader() {
             </nav>
 
             <div className="flex items-center space-x-4">
-              <Link
-                href="/profile"
+              <button
+                type="button"
+                onClick={() => router.push('/profile')}
                 className="flex items-center space-x-2 text-gray-600 hover:text-gray-900"
+                aria-label="Open profile"
+                title="Profile"
               >
                 <div className="w-8 h-8 rounded-full border-2 border-gray-300 overflow-hidden">
                   {avatarUrl ? (
@@ -158,7 +163,7 @@ export default function UnifiedHeader() {
                 <span className="text-sm text-gray-600 hidden sm:block">
                   {user.email || 'Unknown'}
                 </span>
-              </Link>
+              </button>
               <button
                 onClick={handleLogout}
                 className="text-gray-600 hover:text-gray-900 text-sm"
