@@ -30,7 +30,7 @@ export async function middleware(req: NextRequest) {
   } = await supabase.auth.getSession()
 
   // Protected routes that require authentication
-  const protectedRoutes = ['/admin']
+  const protectedRoutes = ['/admin', '/profile']
   
   // Auth routes that should redirect if already logged in
   const authRoutes = ['/login', '/signup']

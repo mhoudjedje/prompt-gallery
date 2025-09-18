@@ -12,7 +12,14 @@ export default function UnifiedNavbar() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClientComponentClient({
+    options: {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+      },
+    },
+  });
 
   useEffect(() => {
     let mounted = true;
@@ -68,6 +75,8 @@ export default function UnifiedNavbar() {
         if (newUser) {
           // Load avatar without blocking UI updates
           void loadUserAvatar(newUser.id);
+          // Ensure server components see the new session immediately
+          router.refresh();
         } else {
           setAvatarUrl(null);
         }
