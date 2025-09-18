@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useToast } from '@/hooks/useToast';
 import { profileApi } from '@/lib/profile_api';
+import type { Session } from '@supabase/supabase-js';
 import type {
   UserProfile,
   ConnectedAccount,
@@ -39,7 +40,11 @@ const ProfileSkeleton = () => (
   </div>
 );
 
-export default function ProfilePage() {
+type ClientProfileProps = {
+  session: Session;
+};
+
+export default function ProfilePage({ session }: ClientProfileProps) {
   const router = useRouter();
   const supabase = createClientComponentClient();
   const { addToast } = useToast();
@@ -58,12 +63,7 @@ export default function ProfilePage() {
 
     const loadProfileData = async () => {
       try {
-        const { data: { user }, error } = await supabase.auth.getUser();
-        if (error || !user) {
-          addToast({ type: 'error', title: 'Authentication Error', message: 'Please sign in to view your profile.' });
-          router.push('/login');
-          return;
-        }
+        const user = session.user;
 
         // Fetch all profile data using the unified API
         const response = await profileApi.getAllProfileData(user.id);
@@ -91,7 +91,7 @@ export default function ProfilePage() {
 
     loadProfileData();
     return () => { mounted = false; };
-  }, [addToast, router, supabase]);
+  }, [addToast, router, supabase, session.user.id]);
 
   // Profile update handler
   const handleUpdateProfile = async (updates: Partial<UserProfile>) => {

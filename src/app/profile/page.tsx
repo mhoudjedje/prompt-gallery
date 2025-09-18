@@ -7,5 +7,5 @@ export default async function ProfilePage() {
   const supabase = createServerComponentClient({ cookies });
   const { data: { session } } = await supabase.auth.getSession();
   if (!session) redirect('/login');
-  return <ClientProfilePage />;
+  return <ClientProfilePage session={session} />;
 }
