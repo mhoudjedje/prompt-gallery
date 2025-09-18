@@ -19,7 +19,8 @@ export default function UnifiedNavbar() {
 
     const getUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { session } } = await supabase.auth.getSession();
+        const user = session?.user ?? null;
         if (mounted) {
           setUser(user);
           if (user) {
@@ -68,8 +69,8 @@ export default function UnifiedNavbar() {
         if (newUser) {
           // Load avatar without blocking UI updates
           void loadUserAvatar(newUser.id);
-          // Ensure server components see the new session immediately
-          router.refresh();
+          // Delay slightly to allow cookie to propagate to server
+          setTimeout(() => router.refresh(), 50);
         } else {
           setAvatarUrl(null);
         }
