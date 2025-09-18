@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { User } from '@supabase/supabase-js';
+import { User, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
 
 export default function UnifiedNavbar() {
   const [user, setUser] = useState<User | null>(null);
@@ -12,7 +12,16 @@ export default function UnifiedNavbar() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = useMemo(() => (
+    createClientComponentClient({
+      options: {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true
+        }
+      }
+    })
+  ), []);
 
   useEffect(() => {
     let mounted = true;
@@ -62,7 +71,7 @@ export default function UnifiedNavbar() {
 
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
       if (mounted) {
         const newUser = session?.user ?? null;
         setUser(newUser);
@@ -72,6 +81,8 @@ export default function UnifiedNavbar() {
         } else {
           setAvatarUrl(null);
         }
+        // Ensure server components (e.g., /profile) see the updated auth cookie
+        router.refresh();
       }
     });
 
