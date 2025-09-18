@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getClientSupabase } from '@/lib/supabase-browser'
 
 export default function UnifiedHeader() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
-  const supabase = createClientComponentClient()
+  const supabase = getClientSupabase()
 
   useEffect(() => {
     let mounted = true;

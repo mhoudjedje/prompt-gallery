@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { getClientSupabase } from '@/lib/supabase-browser';
 import { User, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
 
 export default function UnifiedNavbar() {
@@ -13,7 +13,7 @@ export default function UnifiedNavbar() {
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
   const supabase = useMemo(() => (
-    createClientComponentClient()
+    getClientSupabase()
   ), []);
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function UnifiedNavbar() {
 
       {user ? (
         <div className="flex items-center gap-4">
-          <Link href="/profile" className="flex items-center gap-2 hover:opacity-80">
+          <Link href="/profile" prefetch={false} className="flex items-center gap-2 hover:opacity-80">
             <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 font-semibold hover:ring-2 ring-blue-500 overflow-hidden">
               {avatarLoading ? (
                 <div className="w-full h-full bg-gray-300 animate-pulse" />

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { isSupabaseConfigured } from '@/lib/supabase'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getClientSupabase } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import UnifiedNavbar from '@/components/navigation/UnifiedNavbar'
@@ -15,7 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [supabaseConfigured, setSupabaseConfigured] = useState(false)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = getClientSupabase()
 
   useEffect(() => {
     try {

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs'
+import { getMiddlewareSupabase } from '@/lib/supabase-helpers'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
-  const supabase = createMiddlewareClient({ req, res })
+  const supabase = getMiddlewareSupabase({ req, res })
 
   // Refresh session so client sees latest auth state
   await supabase.auth.getSession()

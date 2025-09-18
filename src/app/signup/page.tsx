@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { isSupabaseConfigured } from '@/lib/supabase'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getClientSupabase } from '@/lib/supabase-browser'
 import Link from 'next/link'
 import UnifiedNavbar from '@/components/navigation/UnifiedNavbar'
 import Footer from '@/components/Footer'
@@ -16,7 +16,7 @@ export default function SignupPage() {
   const [success, setSuccess] = useState(false)
   const [supabaseConfigured, setSupabaseConfigured] = useState(true) // Start as true to avoid flash
   const [mounted, setMounted] = useState(false)
-  const supabase = createClientComponentClient()
+  const supabase = getClientSupabase()
 
   useEffect(() => {
     setMounted(true)

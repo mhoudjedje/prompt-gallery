@@ -2,11 +2,11 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { getClientSupabase } from '@/lib/supabase-browser'
 
 export default function SupabaseListener() {
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = getClientSupabase()
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
