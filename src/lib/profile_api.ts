@@ -19,15 +19,23 @@ export const profileApi = {
   // Fetch user profile
   async getProfile(userId: string): Promise<ApiResponse<UserProfile>> {
     try {
+      console.log('🔍 [ProfileAPI] Getting profile for user ID:', userId);
+      
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [ProfileAPI] Error fetching profile:', error);
+        throw error;
+      }
+      
+      console.log('✅ [ProfileAPI] Profile data received:', data ? 'Found' : 'Not found');
       return createResponse(data);
     } catch (error) {
+      console.error('❌ [ProfileAPI] Exception in getProfile:', error);
       return createResponse<UserProfile>(null, error as Error);
     }
   },
@@ -102,16 +110,24 @@ export const profileApi = {
   // Get connected accounts
   async getConnectedAccounts(userId: string): Promise<ApiResponse<ConnectedAccount[]>> {
     try {
+      console.log('🔍 [ProfileAPI] Getting connected accounts for user ID:', userId);
+      
       const { data, error } = await supabase
         .from('connected_accounts')
         .select('*')
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [ProfileAPI] Error fetching connected accounts:', error);
+        throw error;
+      }
+      
+      console.log('✅ [ProfileAPI] Connected accounts received:', data ? `${data.length} accounts` : 'No accounts');
       return createResponse(data || []);
     } catch (error) {
-  return createResponse<ConnectedAccount[]>(null as unknown as ConnectedAccount[], error as Error);
+      console.error('❌ [ProfileAPI] Exception in getConnectedAccounts:', error);
+      return createResponse<ConnectedAccount[]>(null as unknown as ConnectedAccount[], error as Error);
     }
   },
 
@@ -173,6 +189,8 @@ export const profileApi = {
   // Get notification settings
   async getNotificationSettings(userId: string): Promise<ApiResponse<NotificationSettings>> {
     try {
+      console.log('🔍 [ProfileAPI] Getting notification settings for user ID:', userId);
+      
       const { data, error } = await supabase
         .from('notifications_settings')
         .select('*')
@@ -180,6 +198,7 @@ export const profileApi = {
         .single();
 
       if (error && error.code === 'PGRST116') {
+        console.log('ℹ️ [ProfileAPI] No notification settings found, creating defaults');
         // No settings found, create default
         const { data: newSettings, error: createError } = await supabase
           .from('notifications_settings')
@@ -192,13 +211,23 @@ export const profileApi = {
           .select()
           .single();
           
-        if (createError) throw createError;
+        if (createError) {
+          console.error('❌ [ProfileAPI] Error creating notification settings:', createError);
+          throw createError;
+        }
+        console.log('✅ [ProfileAPI] Created default notification settings');
         return createResponse(newSettings);
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [ProfileAPI] Error fetching notification settings:', error);
+        throw error;
+      }
+      
+      console.log('✅ [ProfileAPI] Notification settings received:', data ? 'Found' : 'Not found');
       return createResponse(data);
     } catch (error) {
+      console.error('❌ [ProfileAPI] Exception in getNotificationSettings:', error);
       return createResponse<NotificationSettings>(null, error as Error);
     }
   },
@@ -229,6 +258,8 @@ export const profileApi = {
   // Get user activity
   async getUserActivity(userId: string): Promise<ApiResponse<UserActivity>> {
     try {
+      console.log('🔍 [ProfileAPI] Getting user activity for user ID:', userId);
+      
       const { data, error } = await supabase
         .from('user_activity')
         .select('*')
@@ -236,6 +267,7 @@ export const profileApi = {
         .single();
 
       if (error && error.code === 'PGRST116') {
+        console.log('ℹ️ [ProfileAPI] No user activity found, creating defaults');
         // No activity found, create default
         const { data: newActivity, error: createError } = await supabase
           .from('user_activity')
@@ -249,13 +281,23 @@ export const profileApi = {
           .select()
           .single();
           
-        if (createError) throw createError;
+        if (createError) {
+          console.error('❌ [ProfileAPI] Error creating user activity:', createError);
+          throw createError;
+        }
+        console.log('✅ [ProfileAPI] Created default user activity');
         return createResponse(newActivity);
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ [ProfileAPI] Error fetching user activity:', error);
+        throw error;
+      }
+      
+      console.log('✅ [ProfileAPI] User activity received:', data ? 'Found' : 'Not found');
       return createResponse(data);
     } catch (error) {
+      console.error('❌ [ProfileAPI] Exception in getUserActivity:', error);
       return createResponse<UserActivity>(null, error as Error);
     }
   },
@@ -297,6 +339,21 @@ export const profileApi = {
   // Fetch all profile data in parallel
   async getAllProfileData(userId: string): Promise<ApiResponse<ProfileData>> {
     try {
+      console.log('🚀 [ProfileAPI] Starting getAllProfileData for user ID:', userId);
+      
+      // First verify we have a valid session
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('🔐 [ProfileAPI] Current session state:', session ? 'Active' : 'No session');
+      
+      if (!session) {
+        throw new Error('No active session found');
+      }
+      
+      if (session.user.id !== userId) {
+        console.error('❌ [ProfileAPI] User ID mismatch - session:', session.user.id, 'requested:', userId);
+        throw new Error('User ID mismatch with session');
+      }
+      
       const [
         profileResponse,
         accountsResponse,
@@ -308,6 +365,13 @@ export const profileApi = {
         this.getNotificationSettings(userId),
         this.getUserActivity(userId)
       ]);
+
+      console.log('📊 [ProfileAPI] Response summary:', {
+        profile: profileResponse.error ? 'Error' : (profileResponse.data ? 'Success' : 'No data'),
+        accounts: accountsResponse.error ? 'Error' : `${accountsResponse.data?.length || 0} accounts`,
+        settings: settingsResponse.error ? 'Error' : (settingsResponse.data ? 'Success' : 'No data'),
+        activity: activityResponse.error ? 'Error' : (activityResponse.data ? 'Success' : 'No data')
+      });
 
       // Check for errors
       if (profileResponse.error) throw profileResponse.error;
@@ -327,8 +391,10 @@ export const profileApi = {
         userActivity: activityResponse.data
       };
 
+      console.log('✅ [ProfileAPI] Successfully compiled all profile data');
       return createResponse(profileData);
     } catch (error) {
+      console.error('❌ [ProfileAPI] Exception in getAllProfileData:', error);
       return createResponse<ProfileData>(null, error as Error);
     }
   }
