@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { User, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
 
 export default function UnifiedNavbar() {
@@ -13,7 +13,10 @@ export default function UnifiedNavbar() {
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
   const supabase = useMemo(() => (
-    createClientComponentClient()
+    createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
   ), []);
 
   useEffect(() => {
@@ -64,7 +67,7 @@ export default function UnifiedNavbar() {
 
     getUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event: AuthChangeEvent, session: Session | null) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       if (mounted) {
         const newUser = session?.user ?? null;
         setUser(newUser);
@@ -74,8 +77,11 @@ export default function UnifiedNavbar() {
         } else {
           setAvatarUrl(null);
         }
-        // Ensure server components (e.g., /profile) see the updated auth cookie
-        router.refresh();
+        
+        // Only refresh router on significant auth changes
+        if (event === 'SIGNED_IN' || event === 'SIGNED_OUT') {
+          router.refresh();
+        }
       }
     });
 

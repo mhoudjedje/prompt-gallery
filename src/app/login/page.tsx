@@ -43,10 +43,11 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Prefer staying on the current page (home) unless an explicit redirect is provided
+      // Redirect to profile or home after successful login
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo')
-      router.replace(redirectTo || '/')
+      router.push(redirectTo || '/')
+      router.refresh() // Ensure server components see the new auth state
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {

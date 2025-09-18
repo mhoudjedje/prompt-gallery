@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import { useToast } from '@/hooks/useToast';
 import { profileApi } from '@/lib/profile_api';
 import type { Session } from '@supabase/supabase-js';
@@ -46,7 +46,10 @@ type ClientProfileProps = {
 
 export default function ProfilePage({ session }: ClientProfileProps) {
   const router = useRouter();
-  const supabase = createClientComponentClient();
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  );
   const { addToast } = useToast();
 
   const [isLoading, setIsLoading] = useState(true);
