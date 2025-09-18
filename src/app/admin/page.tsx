@@ -4,7 +4,7 @@ import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import AdminPanel from './AdminPanel'
 
 interface UserProfile {
@@ -21,6 +21,7 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null)
   const [status, setStatus] = useState<string>('')
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
     checkAuthAndRole()

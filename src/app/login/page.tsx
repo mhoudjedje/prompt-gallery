@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { supabase, isSupabaseConfigured } from '@/lib/supabase'
+import { isSupabaseConfigured } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import UnifiedNavbar from '@/components/navigation/UnifiedNavbar'
@@ -14,6 +15,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null)
   const [supabaseConfigured, setSupabaseConfigured] = useState(false)
   const router = useRouter()
+  const supabase = createClientComponentClient()
 
   useEffect(() => {
     try {
@@ -46,6 +48,8 @@ export default function LoginPage() {
       // Prefer staying on the current page (home) unless an explicit redirect is provided
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo')
+      // Ensure server components see updated auth cookies
+      router.refresh()
       router.replace(redirectTo || '/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
