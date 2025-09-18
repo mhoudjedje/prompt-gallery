@@ -12,14 +12,7 @@ export default function UnifiedNavbar() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
-  const supabase = createClientComponentClient({
-    options: {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-      },
-    },
-  });
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     let mounted = true;
@@ -87,7 +80,7 @@ export default function UnifiedNavbar() {
       mounted = false;
       subscription.unsubscribe();
     };
-  }, [supabase]);
+  }, [supabase, router]);
 
   const handleSignOut = async () => {
     try {
