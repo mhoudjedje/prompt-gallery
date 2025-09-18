@@ -13,14 +13,7 @@ export default function UnifiedNavbar() {
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const router = useRouter();
   const supabase = useMemo(() => (
-    createClientComponentClient({
-      options: {
-        auth: {
-          persistSession: true,
-          autoRefreshToken: true
-        }
-      }
-    })
+    createClientComponentClient()
   ), []);
 
   useEffect(() => {
