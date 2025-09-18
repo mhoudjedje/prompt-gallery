@@ -1,4 +1,4 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@supabase/supabase-js';
 import type { 
   UserProfile, 
   ConnectedAccount, 
@@ -8,7 +8,10 @@ import type {
   ApiResponse 
 } from '@/types/profile';
 
-const supabase = createClientComponentClient();
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 // Helper function to create API response
 function createResponse<T>(data: T | null, error: Error | null = null): ApiResponse<T> {
