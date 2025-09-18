@@ -69,8 +69,6 @@ export default function UnifiedNavbar() {
         if (newUser) {
           // Load avatar without blocking UI updates
           void loadUserAvatar(newUser.id);
-          // Delay slightly to allow cookie to propagate to server
-          setTimeout(() => router.refresh(), 50);
         } else {
           setAvatarUrl(null);
         }

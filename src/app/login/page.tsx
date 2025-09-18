@@ -43,11 +43,10 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Prefer returning to the previous page or profile by default
+      // Prefer staying on the current page (home) unless an explicit redirect is provided
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo')
-      router.replace(redirectTo || '/profile')
-      router.refresh()
+      router.replace(redirectTo || '/')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
