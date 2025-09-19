@@ -82,7 +82,19 @@ export default function ProfilePage({ session }: ClientProfileProps) {
       } catch (err) {
         console.error('Error loading profile data:', err);
         if (mounted) {
-          addToast({ type: 'error', title: 'Error', message: 'Could not load profile data. Please try again.' });
+          // Fallback: render a minimal profile so the page doesn't stay on skeletons
+          const user = session.user;
+          setProfile({
+            id: user.id,
+            email: user.email || undefined,
+            full_name: user.email ? user.email.split('@')[0] : undefined,
+            subscription_status: 'free',
+            role: 'user'
+          });
+          setConnectedAccounts([]);
+          setNotificationSettings({ newsletter_enabled: true });
+          setUserActivity({ prompts_created: 0, prompts_used: 0 });
+          addToast({ type: 'info', title: 'Limited profile', message: 'Showing basic profile while data loads or is unavailable.' });
         }
       } finally {
         if (mounted) setIsLoading(false);

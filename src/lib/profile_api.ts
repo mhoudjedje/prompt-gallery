@@ -309,22 +309,20 @@ export const profileApi = {
         this.getUserActivity(userId)
       ]);
 
-      // Check for errors
-      if (profileResponse.error) throw profileResponse.error;
-      if (accountsResponse.error) throw accountsResponse.error;
-      if (settingsResponse.error) throw settingsResponse.error;
-      if (activityResponse.error) throw activityResponse.error;
+      // Profile is required; others can gracefully degrade
+      if (profileResponse.error || !profileResponse.data) {
+        throw profileResponse.error || new Error('Profile data not found');
+      }
 
-      // Check for missing data
-      if (!profileResponse.data) throw new Error('Profile data not found');
-      if (!settingsResponse.data) throw new Error('Settings data not found');
-      if (!activityResponse.data) throw new Error('Activity data not found');
+      const connectedAccounts = accountsResponse?.data || [];
+      const notificationSettings = settingsResponse?.data || { newsletter_enabled: true };
+      const userActivity = activityResponse?.data || { prompts_created: 0, prompts_used: 0 };
 
       const profileData: ProfileData = {
         profile: profileResponse.data,
-        connectedAccounts: accountsResponse.data || [],
-        notificationSettings: settingsResponse.data,
-        userActivity: activityResponse.data
+        connectedAccounts,
+        notificationSettings,
+        userActivity
       };
 
       return createResponse(profileData);
