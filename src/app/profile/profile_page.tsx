@@ -65,7 +65,7 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
     role: 'user'
   };
   const [isLoading, setIsLoading] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(initialData?.profile ?? defaultProfile);
+  const [profile, setProfile] = useState<UserProfile>(initialData?.profile ?? defaultProfile);
   const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>(initialData?.connectedAccounts ?? []);
   const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(initialData?.notificationSettings ?? { newsletter_enabled: true });
   const [userActivity, setUserActivity] = useState<UserActivity | null>(initialData?.userActivity ?? { prompts_created: 0, prompts_used: 0 });
@@ -123,8 +123,6 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Profile update handler
   const handleUpdateProfile = async (updates: Partial<UserProfile>) => {
-    if (!profile) return;
-    
     const response = await profileApi.updateProfile(profile.id, updates);
     if (!response.error && response.data) {
       setProfile(response.data);
@@ -136,8 +134,6 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Avatar change handler with file picker
   const handleAvatarChange = async () => {
-    if (!profile) return;
-    
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -170,8 +166,6 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Avatar removal handler
   const handleAvatarRemove = async () => {
-    if (!profile) return;
-    
     const removeResponse = await profileApi.removeAvatar(profile.id);
     if (!removeResponse.error) {
       const updateResponse = await profileApi.updateProfile(profile.id, { avatar_url: undefined });
@@ -186,8 +180,6 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Google account connection toggle
   const handleGoogleToggle = async (connected: boolean) => {
-    if (!profile) return;
-    
     const response = await profileApi.updateConnectedAccount(profile.id, 'google', connected);
     if (!response.error && response.data) {
       setConnectedAccounts(prev => {
@@ -227,7 +219,7 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Newsletter preferences toggle
   const handleNewsletterToggle = async (enabled: boolean) => {
-    if (!profile || !notificationSettings) return;
+    if (!notificationSettings) return;
     
     const response = await profileApi.updateNotificationSettings(profile.id, { newsletter_enabled: enabled });
     if (!response.error && response.data) {
@@ -240,8 +232,6 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
 
   // Account deletion handler
   const handleDeleteAccount = async () => {
-    if (!profile) return;
-    
     // Confirmation dialog
     const confirmed = window.confirm(
       'Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data.'
