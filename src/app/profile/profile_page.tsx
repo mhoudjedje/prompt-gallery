@@ -40,24 +40,39 @@ const ProfileSkeleton = () => (
   </div>
 );
 
-type ClientProfileProps = {
-  session: Session;
+type InitialProfileData = {
+  profile: UserProfile;
+  connectedAccounts: ConnectedAccount[];
+  notificationSettings: NotificationSettings;
+  userActivity: UserActivity;
 };
 
-export default function ProfilePage({ session }: ClientProfileProps) {
+type ClientProfileProps = {
+  session: Session;
+  initialData?: InitialProfileData;
+};
+
+export default function ProfilePage({ session, initialData }: ClientProfileProps) {
   const router = useRouter();
   const supabase = getClientSupabase();
   const { addToast } = useToast();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>([]);
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(null);
-  const [userActivity, setUserActivity] = useState<UserActivity | null>(null);
+  const defaultProfile: UserProfile = {
+    id: session.user.id,
+    email: session.user.email || undefined,
+    full_name: session.user.email ? session.user.email.split('@')[0] : undefined,
+    subscription_status: 'free',
+    role: 'user'
+  };
+  const [isLoading, setIsLoading] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(initialData?.profile ?? defaultProfile);
+  const [connectedAccounts, setConnectedAccounts] = useState<ConnectedAccount[]>(initialData?.connectedAccounts ?? []);
+  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings | null>(initialData?.notificationSettings ?? { newsletter_enabled: true });
+  const [userActivity, setUserActivity] = useState<UserActivity | null>(initialData?.userActivity ?? { prompts_created: 0, prompts_used: 0 });
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
-  // Load all profile data on component mount
+  // Load or refresh profile data on mount
   useEffect(() => {
     let mounted = true;
 
@@ -82,7 +97,7 @@ export default function ProfilePage({ session }: ClientProfileProps) {
       } catch (err) {
         console.error('Error loading profile data:', err);
         if (mounted) {
-          // Fallback: render a minimal profile so the page doesn't stay on skeletons
+          // Fallback only if no initial server data
           const user = session.user;
           setProfile({
             id: user.id,
@@ -97,11 +112,12 @@ export default function ProfilePage({ session }: ClientProfileProps) {
           addToast({ type: 'info', title: 'Limited profile', message: 'Showing basic profile while data loads or is unavailable.' });
         }
       } finally {
-        if (mounted) setIsLoading(false);
+        // keep rendering without blocking UI
       }
     };
 
-    loadProfileData();
+    // Refresh in background without blocking UI
+    void loadProfileData();
     return () => { mounted = false; };
   }, [addToast, router, supabase, session.user.id]);
 
@@ -241,17 +257,7 @@ export default function ProfilePage({ session }: ClientProfileProps) {
     }
   };
 
-  // Loading state
-  if (isLoading || !profile) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <UnifiedNavbar />
-        <div className="container mx-auto px-4 py-8">
-          <ProfileSkeleton />
-        </div>
-      </div>
-    );
-  }
+  // Always render page using available data; cards will update as data loads
 
   return (
     <div className="min-h-screen bg-gray-50">
