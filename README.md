@@ -237,4 +237,4 @@ Make sure to set these in your Vercel dashboard:
 MIT License - see LICENSE file for details.
 
 
-<!-- chore: trigger deployment -->
+<!-- chore: trigger deployment --># Deployment triggered Mon Sep 22 11:50:24 PM UTC 2025
