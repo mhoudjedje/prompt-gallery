@@ -70,7 +70,7 @@ export default function SignupPage() {
         email,
         password,
         options: {
-          emailRedirectTo: `${window.location.origin}/profile`
+          emailRedirectTo: `${window.location.origin}/home`
         }
       })
 
@@ -97,7 +97,7 @@ export default function SignupPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/home`
         }
       })
 

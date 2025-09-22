@@ -45,12 +45,12 @@ export default function LoginPage() {
 
       if (error) throw error
 
-      // Prefer staying on the current page (home) unless an explicit redirect is provided
+      // Redirect to home page after successful login
       const urlParams = new URLSearchParams(window.location.search)
       const redirectTo = urlParams.get('redirectTo')
       // Ensure server components see updated auth cookies
       router.refresh()
-      router.replace(redirectTo || '/')
+      router.replace(redirectTo || '/home')
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
@@ -71,7 +71,7 @@ export default function LoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/`
+          redirectTo: `${window.location.origin}/home`
         }
       })
 
