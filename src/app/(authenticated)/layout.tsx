@@ -48,10 +48,10 @@ export default function AuthenticatedLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       <UnifiedNavbar onMenuClick={() => setIsSidebarOpen(true)} />
       
-      <div className="flex">
+      <div className="flex flex-1">
         {/* Sidebar */}
         <Sidebar 
           isOpen={isSidebarOpen} 
@@ -59,7 +59,7 @@ export default function AuthenticatedLayout({
         />
         
         {/* Main Content */}
-        <main className="flex-1 lg:ml-0 min-h-screen">
+        <main className="flex-1 lg:ml-0">
           <div className="py-8">
             {children}
           </div>
