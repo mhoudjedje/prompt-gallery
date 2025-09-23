@@ -13,7 +13,6 @@ import type {
   UserActivity
 } from '@/types/profile';
 
-import UnifiedNavbar from '@/components/navigation/UnifiedNavbar';
 import ProfileDetailsCard from '@/components/profile/ProfileDetailsCard';
 import SubscriptionCard from '@/components/profile/SubscriptionCard';
 import ConnectedAccounts from '@/components/profile/ConnectedAccounts';
@@ -250,60 +249,51 @@ export default function ProfilePage({ session, initialData }: ClientProfileProps
   // Always render page using available data; cards will update as data loads
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <UnifiedNavbar />
-      <div className="container mx-auto px-4 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">Profile Settings</h1>
-          <p className="mt-2 text-gray-600">Manage your account settings and preferences</p>
-        </div>
+    <div className="max-w-2xl mx-auto px-4">
+      {/* Page Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold">Profile Settings</h1>
+        <p className="mt-2 text-gray-600">Manage your account settings and preferences</p>
+      </div>
 
-        {/* Profile Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column */}
-          <div className="space-y-6">
-            <ProfileDetailsCard
-              name={profile.full_name || (profile.email ? profile.email.split('@')[0] : 'User')}
-              email={profile.email ?? ''}
-              avatarUrl={profile.avatar_url}
-              onNameChange={(name) => handleUpdateProfile({ full_name: name })}
-              onAvatarChange={handleAvatarChange}
-              onAvatarRemove={handleAvatarRemove}
-            />
+      {/* Profile Sections - Single Column Layout */}
+      <div className="space-y-6">
+        <ProfileDetailsCard
+          name={profile.full_name || (profile.email ? profile.email.split('@')[0] : 'User')}
+          email={profile.email ?? ''}
+          avatarUrl={profile.avatar_url}
+          onNameChange={(name) => handleUpdateProfile({ full_name: name })}
+          onAvatarChange={handleAvatarChange}
+          onAvatarRemove={handleAvatarRemove}
+        />
 
-            <SubscriptionCard 
-              subscription={profile.subscription_status === 'premium' ? 'Pro' : 'Free'} 
-              role={profile.role ?? 'user'} 
-            />
+        <SubscriptionCard 
+          subscription={profile.subscription_status === 'premium' ? 'Pro' : 'Free'} 
+          role={profile.role ?? 'user'} 
+        />
 
-            <ConnectedAccounts 
-              googleConnected={connectedAccounts.find(acc => acc.provider === 'google')?.connected || false} 
-              onGoogleToggle={handleGoogleToggle} 
-            />
+        <NotificationsCard 
+          newsletterEnabled={notificationSettings?.newsletter_enabled || false} 
+          onNewsletterToggle={handleNewsletterToggle} 
+        />
 
-            <SecurityCard 
-              twoFactorEnabled={false} 
-              onPasswordChange={handlePasswordChange} 
-              onTwoFactorToggle={handleTwoFactorToggle} 
-            />
-          </div>
+        <ActivityOverview 
+          promptsCreated={userActivity?.prompts_created || 0} 
+          promptsUsed={userActivity?.prompts_used || 0} 
+        />
 
-          {/* Right Column */}
-          <div className="space-y-6">
-            <NotificationsCard 
-              newsletterEnabled={notificationSettings?.newsletter_enabled || false} 
-              onNewsletterToggle={handleNewsletterToggle} 
-            />
+        <ConnectedAccounts 
+          googleConnected={connectedAccounts.find(acc => acc.provider === 'google')?.connected || false} 
+          onGoogleToggle={handleGoogleToggle} 
+        />
 
-            <ActivityOverview 
-              promptsCreated={userActivity?.prompts_created || 0} 
-              promptsUsed={userActivity?.prompts_used || 0} 
-            />
+        <SecurityCard 
+          twoFactorEnabled={false} 
+          onPasswordChange={handlePasswordChange} 
+          onTwoFactorToggle={handleTwoFactorToggle} 
+        />
 
-            <DangerZone onDeleteAccount={handleDeleteAccount} />
-          </div>
-        </div>
+        <DangerZone onDeleteAccount={handleDeleteAccount} />
       </div>
 
       {/* Password Change Modal */}

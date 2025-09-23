@@ -59,8 +59,10 @@ export default function AuthenticatedLayout({
         />
         
         {/* Main Content */}
-        <main className="flex-1 lg:ml-0">
-          {children}
+        <main className="flex-1 lg:ml-0 min-h-screen">
+          <div className="py-8">
+            {children}
+          </div>
         </main>
       </div>
     </div>
