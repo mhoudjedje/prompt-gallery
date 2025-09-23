@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import LogoButton from "@/components/navigation/LogoButton";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
       <nav className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
-        <Link href="/" className="text-xl font-bold text-gray-900">
+        <LogoButton className="text-xl font-bold text-gray-900">
           Prompt Gallery
-        </Link>
+        </LogoButton>
         <div className="flex items-center gap-4">
           <Link href="/login" className="text-gray-700 hover:text-blue-600">
             Sign In

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { getClientSupabase } from '@/lib/supabase-browser'
+import LogoButton from './LogoButton'
+import { getLogoutDestination } from '@/lib/redirect-utils'
 
 export default function UnifiedHeader() {
   const [user, setUser] = useState<{ id: string; email?: string } | null>(null)
@@ -82,6 +84,9 @@ export default function UnifiedHeader() {
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut()
+      // Always redirect to login after logout, regardless of current page
+      const logoutDestination = getLogoutDestination()
+      router.push(logoutDestination)
     } catch (error) {
       console.error('Error logging out:', error)
     }
@@ -93,9 +98,9 @@ export default function UnifiedHeader() {
       <header className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-8">
-            <Link href="/" className="text-xl font-semibold text-gray-900">
-              Promptly
-            </Link>
+            <LogoButton className="text-xl font-semibold text-gray-900">
+              Prompt Gallery
+            </LogoButton>
             <nav className="hidden md:flex items-center space-x-6 text-sm">
               <div className="w-16 h-4 bg-gray-200 rounded animate-pulse"></div>
               <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
@@ -118,9 +123,9 @@ export default function UnifiedHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <Link href="/" className="text-2xl font-bold text-gray-900">
+              <LogoButton className="text-2xl font-bold text-gray-900">
                 Prompt Gallery
-              </Link>
+              </LogoButton>
             </div>
             
             <nav className="hidden md:flex space-x-8">
@@ -182,9 +187,9 @@ export default function UnifiedHeader() {
     <header className="bg-white border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <div className="flex items-center space-x-8">
-          <Link href="/" className="text-xl font-semibold text-gray-900">
-            Promptly
-          </Link>
+          <LogoButton className="text-xl font-semibold text-gray-900">
+            Prompt Gallery
+          </LogoButton>
           <nav className="hidden md:flex items-center space-x-6 text-sm">
             <Link href="/gallery" className="text-gray-600 hover:text-gray-900">Browse</Link>
             <Link href="#" className="text-gray-600 hover:text-gray-900">Categories</Link>

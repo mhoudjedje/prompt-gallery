@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { getClientSupabase } from '@/lib/supabase-browser';
 import { User, type AuthChangeEvent, type Session } from '@supabase/supabase-js';
+import LogoButton from './LogoButton';
+import { getLogoutDestination } from '@/lib/redirect-utils';
 
 export default function UnifiedNavbar() {
   const [user, setUser] = useState<User | null>(null);
@@ -88,6 +90,9 @@ export default function UnifiedNavbar() {
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
+      // Always redirect to login after logout, regardless of current page
+      const logoutDestination = getLogoutDestination();
+      router.push(logoutDestination);
       router.refresh();
     } catch (error) {
       console.error('Error signing out:', error);
@@ -97,9 +102,9 @@ export default function UnifiedNavbar() {
   if (loading) {
     return (
       <nav className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
-        <Link href="/" className="text-xl font-bold text-gray-900">
+        <LogoButton className="text-xl font-bold text-gray-900">
           Prompt Gallery
-        </Link>
+        </LogoButton>
         <div className="flex items-center gap-4">
           <div className="h-8 w-24 bg-gray-200 rounded animate-pulse" />
         </div>
@@ -109,9 +114,9 @@ export default function UnifiedNavbar() {
 
   return (
     <nav className="w-full h-16 flex items-center justify-between px-6 bg-white border-b">
-      <Link href="/" className="text-xl font-bold text-gray-900">
+      <LogoButton className="text-xl font-bold text-gray-900">
         Prompt Gallery
-      </Link>
+      </LogoButton>
 
       {user ? (
         <div className="flex items-center gap-4">

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { getMiddlewareSupabase } from '@/lib/supabase-helpers'
+import { requiresAuthentication, REDIRECT_PATHS } from '@/lib/redirect-utils'
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -8,10 +9,17 @@ export async function middleware(req: NextRequest) {
 
   // Refresh session so client sees latest auth state
   const { data: { session } } = await supabase.auth.getSession()
+  const isAuthenticated = !!session
+  const currentPath = req.nextUrl.pathname
 
-  // Protect /home and /profile routes
-  if (!session && (req.nextUrl.pathname.startsWith('/home') || req.nextUrl.pathname.startsWith('/profile'))) {
-    return NextResponse.redirect(new URL('/login', req.url))
+  // Protect routes that require authentication
+  if (!isAuthenticated && requiresAuthentication(currentPath)) {
+    return NextResponse.redirect(new URL(REDIRECT_PATHS.LOGIN, req.url))
+  }
+
+  // Optional: Redirect authenticated users away from login page to home
+  if (isAuthenticated && currentPath === REDIRECT_PATHS.LOGIN) {
+    return NextResponse.redirect(new URL(REDIRECT_PATHS.HOME, req.url))
   }
 
   return res
