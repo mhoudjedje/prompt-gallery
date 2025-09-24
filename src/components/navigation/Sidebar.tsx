@@ -38,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     },
     {
       name: 'My Portfolio',
-      href: userPortfolioLink,
+      href: '/portfolio', // Simplified route for testing
       icon: User,
     },
   ];

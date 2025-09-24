@@ -15,7 +15,7 @@ export const REDIRECT_PATHS = {
 export function getRedirectPath(isAuthenticated: boolean, currentPath?: string): string {
   if (isAuthenticated) {
     // If authenticated, redirect to home unless already on a valid authenticated page
-    const validAuthenticatedPaths = [REDIRECT_PATHS.HOME, REDIRECT_PATHS.PROFILE];
+    const validAuthenticatedPaths = [REDIRECT_PATHS.HOME, REDIRECT_PATHS.PROFILE, '/contributor'];
     if (currentPath && validAuthenticatedPaths.some(path => currentPath.startsWith(path))) {
       return currentPath; // Stay on current page if it's valid
     }
@@ -30,7 +30,7 @@ export function getRedirectPath(isAuthenticated: boolean, currentPath?: string):
  * Determines if a path requires authentication
  */
 export function requiresAuthentication(path: string): boolean {
-  const protectedPaths = [REDIRECT_PATHS.HOME, REDIRECT_PATHS.PROFILE];
+  const protectedPaths = [REDIRECT_PATHS.HOME, REDIRECT_PATHS.PROFILE, '/contributor'];
   return protectedPaths.some(protectedPath => path.startsWith(protectedPath));
 }
 

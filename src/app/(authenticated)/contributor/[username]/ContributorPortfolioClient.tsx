@@ -118,6 +118,8 @@ export default function ContributorPortfolioClient({ username }: ContributorPort
   const [currentPage, setCurrentPage] = useState(1);
   const promptsPerPage = 6;
 
+  console.log('ContributorPortfolioClient: Rendering with username', username);
+
   // For now, we'll use mock data regardless of username
   // In the future, this would fetch real data based on the username
   const contributor = mockContributor;
