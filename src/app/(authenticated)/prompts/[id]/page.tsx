@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
@@ -151,10 +151,9 @@ export default function PromptDetailsPage() {
     )
   }
 
-  const contributorDisplayName = useMemo(() => {
-    if (!contributor) return 'Unknown contributor'
-    return contributor.full_name || contributor.email || 'Unnamed user'
-  }, [contributor])
+  const contributorDisplayName = contributor
+    ? (contributor.full_name || contributor.email || 'Unnamed user')
+    : 'Unknown contributor'
 
   return (
     <div className="min-h-screen bg-gray-50">
