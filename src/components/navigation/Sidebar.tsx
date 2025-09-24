@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, FileText, X } from 'lucide-react';
+import { Home, User, X } from 'lucide-react';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -20,9 +20,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
       icon: Home,
     },
     {
-      name: 'My Prompts',
-      href: '/prompts',
-      icon: FileText,
+      name: 'My Portfolio',
+      href: '/contributor/alex_designer',
+      icon: User,
     },
   ];
 
