@@ -1,9 +1,10 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Home, User, X } from 'lucide-react';
+import { getClientSupabase } from '@/lib/supabase-browser';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -12,6 +13,22 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const [userPortfolioLink, setUserPortfolioLink] = useState('/contributor/me');
+
+  useEffect(() => {
+    const getUserPortfolioLink = async () => {
+      const supabase = getClientSupabase();
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (session?.user?.id) {
+        // Use user ID or email as username for now
+        const username = session.user.email?.split('@')[0] || session.user.id;
+        setUserPortfolioLink(`/contributor/${username}`);
+      }
+    };
+
+    getUserPortfolioLink();
+  }, []);
 
   const navigationItems = [
     {
@@ -21,7 +38,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     },
     {
       name: 'My Portfolio',
-      href: '/contributor/alex_designer',
+      href: userPortfolioLink,
       icon: User,
     },
   ];
